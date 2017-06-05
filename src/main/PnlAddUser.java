@@ -89,6 +89,17 @@ public class PnlAddUser extends javax.swing.JPanel {
         txtUserConfrimPassword.setText("");
     }
     
+    private void confirmPassword(){
+        if (txtUserAddPassword.getText().equals(txtUserConfrimPassword.getText())) {
+            createUser();
+            JOptionPane.showMessageDialog(this, "Insert Successful!");
+            userList(tblUserUserList1);
+            clear();
+        } else {
+            JOptionPane.showMessageDialog(this, "Password don't match!");
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -216,30 +227,15 @@ public class PnlAddUser extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtUserAddPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserAddPasswordActionPerformed
-
+        confirmPassword();
     }//GEN-LAST:event_txtUserAddPasswordActionPerformed
 
     private void txtUserConfrimPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserConfrimPasswordActionPerformed
-        // TODO add your handling code here:
-        if (txtUserAddPassword.getText().equals(txtUserConfrimPassword.getText())) {
-            createUser();
-            JOptionPane.showMessageDialog(this, "Insert Successful!");
-            userList(tblUserUserList1);
-            clear();
-        } else {
-            JOptionPane.showMessageDialog(this, "Password don't match!");
-        }
+        confirmPassword();
     }//GEN-LAST:event_txtUserConfrimPasswordActionPerformed
 
     private void btnUserCreateUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserCreateUserActionPerformed
-        if (txtUserAddPassword.getText().equals(txtUserConfrimPassword.getText())) {
-            createUser();
-            JOptionPane.showMessageDialog(this, "Insert Successful!");
-            userList(tblUserUserList1);
-            clear();
-        } else {
-            JOptionPane.showMessageDialog(this, "Password don't match!");
-        }
+        confirmPassword();
     }//GEN-LAST:event_btnUserCreateUserActionPerformed
 
 
