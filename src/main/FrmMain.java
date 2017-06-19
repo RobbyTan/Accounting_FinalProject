@@ -32,7 +32,7 @@ public class FrmMain extends javax.swing.JFrame {
     public FrmMain(Connection conn) {
         myConn = conn;
         initComponents();
-        setSize(1600, 900);
+        setSize(880,495);
         setLocationRelativeTo(null);
         
         //create panel and insert connection
@@ -67,7 +67,7 @@ public class FrmMain extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.CardLayout());
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 1600, 880);
+        jPanel1.setBounds(0, 0, 880, 475);
 
         jMenu3.setText("User");
 
