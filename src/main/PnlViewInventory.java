@@ -5,6 +5,10 @@
  */
 package main;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author Phantom
@@ -14,8 +18,13 @@ public class PnlViewInventory extends javax.swing.JPanel {
     /**
      * Creates new form PnlViewInventory
      */
-    public PnlViewInventory() {
+    private Connection myConn = null;
+    private PreparedStatement myStmt = null;
+    private ResultSet myRs = null;
+    
+    public PnlViewInventory(Connection conn) {
         initComponents();
+        myConn=conn;
     }
 
     /**

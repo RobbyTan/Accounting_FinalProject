@@ -5,6 +5,10 @@
  */
 package main;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author Phantom
@@ -14,8 +18,13 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
     /**
      * Creates new form PnlBalanceSheetReport
      */
-    public PnlBalanceSheetReport() {
+    private Connection myConn = null;
+    private PreparedStatement myStmt = null;
+    private ResultSet myRs = null;
+    
+    public PnlBalanceSheetReport(Connection conn) {
         initComponents();
+        myConn=conn;
     }
 
     /**

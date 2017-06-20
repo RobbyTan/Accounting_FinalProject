@@ -5,6 +5,10 @@
  */
 package main;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author Phantom
@@ -14,8 +18,13 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
     /**
      * Creates new form PnlIncomeStatement
      */
-    public PnlIncomeStatement() {
+    private Connection myConn = null;
+    private PreparedStatement myStmt = null;
+    private ResultSet myRs = null;
+    
+    public PnlIncomeStatement(Connection conn) {
         initComponents();
+        myConn=conn;
     }
 
     /**
