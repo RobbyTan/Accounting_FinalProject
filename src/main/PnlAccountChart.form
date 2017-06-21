@@ -26,7 +26,7 @@
                       <EmptySpace min="-2" pref="151" max="-2" attributes="0"/>
                       <Component id="jScrollPane1" min="-2" pref="567" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <EmptySpace min="-2" pref="171" max="-2" attributes="0"/>
                       <Component id="btnAccountChartAdd" min="-2" pref="71" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="58" max="-2" attributes="0"/>
@@ -37,7 +37,9 @@
                       <Component id="rdoAccountChartEditOff" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
                       <Component id="btnAccountChartDelete" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="btnAccountChartReset" min="-2" pref="63" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnAccountChartSave" min="-2" pref="63" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -56,6 +58,7 @@
                   <Component id="rdoAccountChartEditOff" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnAccountChartSave" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
+                  <Component id="btnAccountChartReset" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="284" max="-2" attributes="0"/>
@@ -157,10 +160,18 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnAccountChartSave">
       <Properties>
-        <Property name="text" type="java.lang.String" value="save"/>
+        <Property name="text" type="java.lang.String" value="Save"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAccountChartSaveActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnAccountChartReset">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Reset"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAccountChartResetActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

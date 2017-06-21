@@ -3,13 +3,17 @@ package main;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import util.SUtility;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author USER
@@ -19,14 +23,13 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     /**
      * Creates new form PanelCreateJurnal
      */
-    
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    
+
     public PnlCreateJurnal(Connection conn) {
         initComponents();
-        myConn=conn;
+        myConn = conn;
     }
 
     /**
@@ -42,12 +45,13 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtCreateJurnalJurnalNo = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txaCreateJurnalDescription = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        tblCreateJurnal = new javax.swing.JTable();
+        btnCreateJurnalAddRow = new javax.swing.JButton();
+        btnCreateJurnalSave = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Date :");
@@ -61,41 +65,45 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel4.setText("J-");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtCreateJurnalJurnalNo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtCreateJurnalJurnalNoActionPerformed(evt);
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txaCreateJurnalDescription.setColumns(20);
+        txaCreateJurnalDescription.setRows(5);
+        jScrollPane1.setViewportView(txaCreateJurnalDescription);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblCreateJurnal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
                 "Chart No", "Chart Name", "Debit", "Kredit"
             }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane2.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
+        ));
+        jScrollPane2.setViewportView(tblCreateJurnal);
+        if (tblCreateJurnal.getColumnModel().getColumnCount() > 0) {
+            tblCreateJurnal.getColumnModel().getColumn(0).setResizable(false);
+            tblCreateJurnal.getColumnModel().getColumn(1).setResizable(false);
+            tblCreateJurnal.getColumnModel().getColumn(2).setResizable(false);
+            tblCreateJurnal.getColumnModel().getColumn(3).setResizable(false);
         }
 
-        jButton1.setText("Add Row");
+        btnCreateJurnalAddRow.setText("Add Row");
+        btnCreateJurnalAddRow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateJurnalAddRowActionPerformed(evt);
+            }
+        });
+
+        btnCreateJurnalSave.setText("Save");
+        btnCreateJurnalSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateJurnalSaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -108,21 +116,26 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(99, 99, 99))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(btnCreateJurnalAddRow)
                         .addGap(135, 135, 135))))
             .addGroup(layout.createSequentialGroup()
-                .addGap(247, 247, 247)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(247, 247, 247)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCreateJurnalJurnalNo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(400, 400, 400)
+                        .addComponent(btnCreateJurnalSave, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -134,7 +147,7 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCreateJurnalJurnalNo, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -143,28 +156,64 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
                         .addGap(14, 14, 14)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(9, 9, 9)
-                .addComponent(jButton1)
+                .addComponent(btnCreateJurnalAddRow)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(67, 67, 67))
+                .addGap(18, 18, 18)
+                .addComponent(btnCreateJurnalSave)
+                .addGap(26, 26, 26))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtCreateJurnalJurnalNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCreateJurnalJurnalNoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtCreateJurnalJurnalNoActionPerformed
+
+    private void btnCreateJurnalAddRowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalAddRowActionPerformed
+        Object data[] = {"", "", "", ""
+        };
+        DefaultTableModel tableModel = (DefaultTableModel) tblCreateJurnal.getModel();
+        tableModel.addRow(data);
+    }//GEN-LAST:event_btnCreateJurnalAddRowActionPerformed
+
+    private void btnCreateJurnalSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalSaveActionPerformed
+//         int x = SUtility.msq(this, "Are you sure?");
+//        if (x == 0) {
+//            try {
+//                for (int i = 0; i < tblCreateJurnal.getRowCount(); i++) {
+//                    // Prepare statement
+//
+//                    myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`jurnal_detail` ( `jurnal_no`, `chart_no`, `chart_name`, `debit`, `kredit`) VALUES "
+//                            + "(?,?,?,?,?)");
+//                    myStmt.setString(1,"j-"+txtCreateJurnalJurnalNo.getText());
+//                    myStmt.setString(2, tblCreateJurnal.getValueAt(i, 0).toString());
+//                    myStmt.setString(3, tblCreateJurnal.getValueAt(i, 1).toString());
+//                    myStmt.setDouble(4, Double.valueOf(tblCreateJurnal.getValueAt(i, 2).toString()));
+//                    myStmt.setDouble(5, Double.valueOf(tblCreateJurnal.getValueAt(i, 3).toString()));
+//
+//                    // Execute SQL query
+//                    myStmt.executeUpdate();
+//                    System.out.println("add");
+//                    
+//                }SUtility.msg(this, "Update Saved!");
+//            } catch (SQLException ex) {
+//                Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+    }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnCreateJurnalAddRow;
+    private javax.swing.JButton btnCreateJurnalSave;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tblCreateJurnal;
+    private javax.swing.JTextArea txaCreateJurnalDescription;
+    private javax.swing.JTextField txtCreateJurnalJurnalNo;
     // End of variables declaration//GEN-END:variables
 }

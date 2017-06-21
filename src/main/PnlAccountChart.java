@@ -38,31 +38,33 @@ public class PnlAccountChart extends javax.swing.JPanel {
         myConn = conn;
         if (rdoAccountChartEditOff.isSelected()) {
             btnAccountChartSave.setVisible(false);
+            btnAccountChartReset.setVisible(false);
         } else {
             btnAccountChartSave.setVisible(true);
+            btnAccountChartReset.setVisible(true);
         }
+        tableSelectionListener();
     }
 
     private void executeAccountChartDelete() {
         int x = SUtility.msq(this, "Are you sure?");
-        if(x==0){
-        try {
-            // Prepare statement
-            myStmt = myConn
-                    .prepareStatement("delete from account_chart where chart_no=?");
+        if (x == 0) {
+            try {
+                // Prepare statement
+                myStmt = myConn
+                        .prepareStatement("delete from account_chart where chart_no=?");
 
-            myStmt.setString(1, tblAccountChart.getValueAt(row, 0).toString());
+                myStmt.setString(1, tblAccountChart.getValueAt(row, 0).toString());
 
+                // Execute SQL query
+                myStmt.executeUpdate();
+                generateTable();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid Input");
+                Logger.getLogger(DlgAddAccountChart.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-            // Execute SQL query
-            myStmt.executeUpdate();
-            generateTable();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid Input");
-            Logger.getLogger(DlgAddAccountChart.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-    }
 
     }
 
@@ -119,6 +121,7 @@ public class PnlAccountChart extends javax.swing.JPanel {
         tblAccountChart = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         btnAccountChartSave = new javax.swing.JButton();
+        btnAccountChartReset = new javax.swing.JButton();
 
         btnAccountChartAdd.setText("New");
         btnAccountChartAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -170,10 +173,17 @@ public class PnlAccountChart extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Edit :");
 
-        btnAccountChartSave.setText("save");
+        btnAccountChartSave.setText("Save");
         btnAccountChartSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAccountChartSaveActionPerformed(evt);
+            }
+        });
+
+        btnAccountChartReset.setText("Reset");
+        btnAccountChartReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAccountChartResetActionPerformed(evt);
             }
         });
 
@@ -197,7 +207,9 @@ public class PnlAccountChart extends javax.swing.JPanel {
                         .addComponent(rdoAccountChartEditOff)
                         .addGap(57, 57, 57)
                         .addComponent(btnAccountChartDelete)
-                        .addGap(45, 45, 45)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnAccountChartReset, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnAccountChartSave, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(162, Short.MAX_VALUE))
         );
@@ -211,7 +223,8 @@ public class PnlAccountChart extends javax.swing.JPanel {
                     .addComponent(rdoAccountChartEditOn)
                     .addComponent(rdoAccountChartEditOff)
                     .addComponent(jLabel1)
-                    .addComponent(btnAccountChartSave, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAccountChartSave, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAccountChartReset, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(50, Short.MAX_VALUE))
@@ -220,11 +233,14 @@ public class PnlAccountChart extends javax.swing.JPanel {
 
     private void rdoAccountChartEditOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoAccountChartEditOnActionPerformed
         btnAccountChartSave.setVisible(true);
+        btnAccountChartReset.setVisible(true);
 //        tblAccountChart.is
     }//GEN-LAST:event_rdoAccountChartEditOnActionPerformed
 
     private void rdoAccountChartEditOffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdoAccountChartEditOffActionPerformed
         btnAccountChartSave.setVisible(false);
+        btnAccountChartReset.setVisible(false);
+        generateTable();
     }//GEN-LAST:event_rdoAccountChartEditOffActionPerformed
 
     private void btnAccountChartDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccountChartDeleteActionPerformed
@@ -237,14 +253,44 @@ public class PnlAccountChart extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAccountChartAddActionPerformed
 
     private void btnAccountChartSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccountChartSaveActionPerformed
-        
+        int x = SUtility.msq(this, "Are you sure?");
+        if (x == 0) {
+            try {
+                myStmt = myConn.prepareStatement("delete from account_chart");
+
+                // Execute SQL query
+                myStmt.executeUpdate();
+                System.out.println("delete");
+                for (int i = 0; i < tblAccountChart.getRowCount(); i++) {
+                    // Prepare statement
+
+                    myStmt = myConn.prepareStatement("insert into account_chart values (?,?,?)");
+
+                    myStmt.setString(1, tblAccountChart.getValueAt(i, 0).toString());
+                    myStmt.setString(2, tblAccountChart.getValueAt(i, 1).toString());
+                    myStmt.setString(3, tblAccountChart.getValueAt(i, 2).toString());
+
+                    // Execute SQL query
+                    myStmt.executeUpdate();
+                    System.out.println("add");
+                    
+                }SUtility.msg(this, "Update Saved!");
+            } catch (SQLException ex) {
+                Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_btnAccountChartSaveActionPerformed
+
+    private void btnAccountChartResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAccountChartResetActionPerformed
+        generateTable();
+    }//GEN-LAST:event_btnAccountChartResetActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup EditableOnOff;
     private javax.swing.JButton btnAccountChartAdd;
     private javax.swing.JButton btnAccountChartDelete;
+    private javax.swing.JButton btnAccountChartReset;
     private javax.swing.JButton btnAccountChartSave;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
