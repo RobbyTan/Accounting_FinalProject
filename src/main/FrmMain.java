@@ -1,6 +1,7 @@
 package main;
 
 
+import injection.Inject;
 import java.awt.Component;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,21 +23,12 @@ public class FrmMain extends javax.swing.JFrame {
     /**
      * Creates new form FrmMain
      */
-    private Connection myConn = null;
-    private PreparedStatement myStmt = null;
-    private ResultSet myRs = null;
+    private Connection myConn;
+    private PreparedStatement myStmt ;
+    private ResultSet myRs;
     
-    PnlAddUser addUser=null;
-    PnlDeleteUser deleteUser=null;
-    PnlAccountChart accountChart=null;
-    PnlCreateJurnal createJurnal=null;
-    PnlViewJurnal viewJurnal =null;
-    PnlGeneralLedger generalLedger=null;
-    PnlTrialBalance trialBalance=null;
-    PnlInsertInventory insertInventory=null;
-    PnlViewInventory viewInventory=null;
-    PnlBalanceSheetReport balanceSheet=null;
-    PnlIncomeStatement incomeStatement=null;
+    Inject inject;
+    
 
     public FrmMain(Connection conn) {
         myConn = conn;
@@ -44,21 +36,11 @@ public class FrmMain extends javax.swing.JFrame {
         setSize(880,510);
         setLocationRelativeTo(null);
         
-        //create panel and insert connection
-        addUser= new PnlAddUser(myConn);
-        deleteUser=new PnlDeleteUser(myConn);
-        accountChart=new PnlAccountChart(myConn);
-        createJurnal=new PnlCreateJurnal(myConn);
-        viewJurnal=new PnlViewJurnal(myConn);
-        generalLedger=new PnlGeneralLedger(myConn);
-        trialBalance=new PnlTrialBalance(myConn);
-        insertInventory=new PnlInsertInventory(myConn);
-        viewInventory=new PnlViewInventory(myConn);
-        balanceSheet=new PnlBalanceSheetReport(myConn);
-        incomeStatement=new PnlIncomeStatement(myConn);
+        inject=new Inject(myConn,this);
+        
     }
 
-    private void changeLayout(Component comp) {
+    public void changeLayout(Component comp) {
         jPanel1.removeAll();
         jPanel1.repaint();
         jPanel1.revalidate();
@@ -81,6 +63,7 @@ public class FrmMain extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem12 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -101,7 +84,7 @@ public class FrmMain extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.CardLayout());
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 880, 475);
+        jPanel1.setBounds(0, 0, 880, 490);
 
         jMenu3.setText("User");
 
@@ -144,6 +127,14 @@ public class FrmMain extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItem2);
+
+        jMenuItem12.setText("Edit Jurnal");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem12);
 
         jMenuItem3.setText("View Jurnal");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -229,51 +220,55 @@ public class FrmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        changeLayout(addUser);
-        addUser.refresh();
+        changeLayout(inject.addUser);
+        inject.addUser.refresh();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        changeLayout(deleteUser);
-        deleteUser.refresh();
+        changeLayout(inject.deleteUser);
+        inject.deleteUser.refresh();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        changeLayout(accountChart);
-        accountChart.generateTable();
+        changeLayout(inject.accountChart);
+        inject.accountChart.generateTable();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        changeLayout(viewInventory);
+        changeLayout(inject.viewInventory);
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        changeLayout(createJurnal);
+        changeLayout(inject.createJurnal);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        changeLayout(viewJurnal);
+        changeLayout(inject.viewJurnal);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        changeLayout(generalLedger);
+        changeLayout(inject.generalLedger);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        changeLayout(trialBalance);
+        changeLayout(inject.trialBalance);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        changeLayout(insertInventory);
+        changeLayout(inject.insertInventory);
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        changeLayout(incomeStatement);
+        changeLayout(inject.incomeStatement);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
-         changeLayout(balanceSheet);
+         changeLayout(inject.balanceSheet);
     }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        changeLayout(inject.editJurnal);
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -292,6 +287,7 @@ public class FrmMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

@@ -5,6 +5,7 @@
  */
 package main;
 
+import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,9 +23,12 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
     
-    public PnlBalanceSheetReport(Connection conn) {
+    Inject inject;
+    
+    public PnlBalanceSheetReport(Connection conn,Inject inject) {
         initComponents();
         myConn=conn;
+        this.inject=inject;
     }
 
     /**

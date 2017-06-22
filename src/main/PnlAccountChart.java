@@ -1,5 +1,6 @@
 package main;
 
+import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,12 +31,14 @@ public class PnlAccountChart extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-
+    
+    Inject inject;
     int row;
 
-    public PnlAccountChart(Connection conn) {
+    public PnlAccountChart(Connection conn,Inject inject) {
         initComponents();
         myConn = conn;
+        this.inject=inject;
         if (rdoAccountChartEditOff.isSelected()) {
             btnAccountChartSave.setVisible(false);
             btnAccountChartReset.setVisible(false);
@@ -44,6 +47,7 @@ public class PnlAccountChart extends javax.swing.JPanel {
             btnAccountChartReset.setVisible(true);
         }
         tableSelectionListener();
+        
     }
 
     private void executeAccountChartDelete() {

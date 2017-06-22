@@ -1,5 +1,6 @@
 package main;
 
+import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,9 +24,12 @@ public class PnlViewJurnal extends javax.swing.JPanel {
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
     
-    public PnlViewJurnal(Connection conn) {
+    Inject inject;
+    
+    public PnlViewJurnal(Connection conn,Inject inject) {
         initComponents();
         myConn=conn;
+        this.inject=inject;
     }
 
     /**

@@ -32,6 +32,7 @@ public class DlgAddAccountChart extends javax.swing.JDialog {
         myConn = conn;
         setLocationRelativeTo(null);
         this.parent=parent;
+        
     }
 
     private void executeAccountChartAdd() {

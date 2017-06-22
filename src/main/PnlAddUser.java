@@ -5,6 +5,7 @@
  */
 package main;
 
+import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,9 +31,12 @@ public class PnlAddUser extends javax.swing.JPanel {
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
     
-    public PnlAddUser(Connection conn) {
+    Inject inject;
+    
+    public PnlAddUser(Connection conn,Inject inject) {
         myConn=conn;
         initComponents();
+        this.inject=inject;
     }
     
     public void refresh(){
