@@ -5,6 +5,7 @@
  */
 package main;
 
+import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import util.SUtility;
 
 /**
  *
@@ -29,9 +31,12 @@ public class PnlAddUser extends javax.swing.JPanel {
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
     
-    public PnlAddUser(Connection conn) {
+    Inject inject;
+    
+    public PnlAddUser(Connection conn,Inject inject) {
         myConn=conn;
         initComponents();
+        this.inject=inject;
     }
     
     public void refresh(){
@@ -52,8 +57,11 @@ public class PnlAddUser extends javax.swing.JPanel {
             txtUserAddPassword.setText("");
             txtUserAddPassword.setText("");
             txtUserConfrimPassword.setText("");
+            JOptionPane.showMessageDialog(this, "Insert Successful!");
         } catch (SQLException ex) {
+            SUtility.mse(this, "Username Already Exist!");
             Logger.getLogger(FrmMain.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
     }
 
@@ -91,11 +99,11 @@ public class PnlAddUser extends javax.swing.JPanel {
     private void confirmPassword(){
         if (txtUserAddPassword.getText().equals(txtUserConfrimPassword.getText())) {
             createUser();
-            JOptionPane.showMessageDialog(this, "Insert Successful!");
             userList(tblUserUserList1);
             clear();
         } else {
             JOptionPane.showMessageDialog(this, "Password don't match!");
+            
         }
     }
     

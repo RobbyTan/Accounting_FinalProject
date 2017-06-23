@@ -5,6 +5,11 @@
  */
 package main;
 
+import injection.Inject;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author Phantom
@@ -14,8 +19,16 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
     /**
      * Creates new form PnlBalanceSheetReport
      */
-    public PnlBalanceSheetReport() {
+    private Connection myConn = null;
+    private PreparedStatement myStmt = null;
+    private ResultSet myRs = null;
+    
+    Inject inject;
+    
+    public PnlBalanceSheetReport(Connection conn,Inject inject) {
         initComponents();
+        myConn=conn;
+        this.inject=inject;
     }
 
     /**

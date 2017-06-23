@@ -1,5 +1,10 @@
 package main;
 
+import injection.Inject;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,8 +20,17 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
     /**
      * Creates new form PnlGeneralLedger
      */
-    public PnlGeneralLedger() {
+    private Connection myConn = null;
+    private PreparedStatement myStmt = null;
+    private ResultSet myRs = null;
+    
+    Inject inject;
+    
+    public PnlGeneralLedger(Connection conn,Inject inject) {
         initComponents();
+        myConn=conn;
+        this.inject=inject;
+        
     }
 
     /**

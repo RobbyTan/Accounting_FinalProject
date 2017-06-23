@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -19,7 +20,7 @@ import util.SUtility;
  *
  * @author USER
  */
-public class PnlCreateJurnal extends javax.swing.JPanel {
+public class PnlEditJurnal extends javax.swing.JPanel {
 
     /**
      * Creates new form PanelCreateJurnal
@@ -30,17 +31,11 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     
     Inject inject;
     
-    FrmMain main;
-    
-    public PnlCreateJurnal(Connection conn,Inject inject) {
+    public PnlEditJurnal(Connection conn,Inject inject) {
         initComponents();
         myConn = conn;
-        this.main=main;
         this.inject=inject;
-    }
-    
-    public String getJurnalNumber() {
-        return "J-" + txtCreateJurnalJurnalNo.getText();
+        generateComboBoxJurnalNo();
     }
     
     public void generateTable() {
@@ -64,6 +59,25 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+        private void generateComboBoxJurnalNo() {
+        try {
+            cboJurnalList.removeAllItems();
+            myStmt = myConn.prepareStatement("select * from jurnal_detail group by jurnal_no");
+            // Execute SQL query
+            myRs = myStmt.executeQuery();
+            ArrayList<String> jurnalNo = new ArrayList<>();
+            // Process result set
+            while (myRs.next()) {
+                jurnalNo.add(myRs.getString("jurnal_no"));
+            }
+            for (String a : jurnalNo) {
+                cboJurnalList.addItem(a);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DlgCreateJurnalAddJurnalTransaction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -77,14 +91,12 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        txtCreateJurnalJurnalNo = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         txaCreateJurnalDescription = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblCreateJurnal = new javax.swing.JTable();
-        btnCreateJurnalAddTransaction = new javax.swing.JButton();
         btnCreateJurnalSave = new javax.swing.JButton();
+        cboJurnalList = new javax.swing.JComboBox<>();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Date :");
@@ -94,15 +106,6 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("Description :");
-
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel4.setText("J-");
-
-        txtCreateJurnalJurnalNo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCreateJurnalJurnalNoActionPerformed(evt);
-            }
-        });
 
         txaCreateJurnalDescription.setColumns(20);
         txaCreateJurnalDescription.setRows(5);
@@ -124,14 +127,7 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             tblCreateJurnal.getColumnModel().getColumn(3).setResizable(false);
         }
 
-        btnCreateJurnalAddTransaction.setText("Add Transaction");
-        btnCreateJurnalAddTransaction.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCreateJurnalAddTransactionActionPerformed(evt);
-            }
-        });
-
-        btnCreateJurnalSave.setText("Save");
+        btnCreateJurnalSave.setText("Save Jurnal");
         btnCreateJurnalSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCreateJurnalSaveActionPerformed(evt);
@@ -144,72 +140,48 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap(89, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(99, 99, 99))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnCreateJurnalAddTransaction)
-                        .addGap(135, 135, 135))))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(99, 99, 99))
             .addGroup(layout.createSequentialGroup()
+                .addGap(247, 247, 247)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(247, 247, 247)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtCreateJurnalJurnalNo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(400, 400, 400)
-                        .addComponent(btnCreateJurnalSave, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cboJurnalList, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(387, 387, 387)
+                .addComponent(btnCreateJurnalSave)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(14, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel4)
-                    .addComponent(txtCreateJurnalJurnalNo, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(9, 9, 9)
-                .addComponent(btnCreateJurnalAddTransaction)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(50, 50, 50)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboJurnalList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(btnCreateJurnalSave)
                 .addGap(26, 26, 26))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtCreateJurnalJurnalNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCreateJurnalJurnalNoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtCreateJurnalJurnalNoActionPerformed
-
-    private void btnCreateJurnalAddTransactionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalAddTransactionActionPerformed
-        if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty()) {
-            DlgCreateJurnalAddJurnalTransaction addTransaction = new DlgCreateJurnalAddJurnalTransaction(this, true, myConn);
-            addTransaction.setVisible(true);
-        } else {
-            SUtility.msg(this, "Jurnal number must not be empty");
-        }
-    }//GEN-LAST:event_btnCreateJurnalAddTransactionActionPerformed
 
     private void btnCreateJurnalSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalSaveActionPerformed
 //         int x = SUtility.msq(this, "Are you sure?");
@@ -235,21 +207,18 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
 //                Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
-        inject.main.changeLayout(inject.viewJurnal);
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCreateJurnalAddTransaction;
     private javax.swing.JButton btnCreateJurnalSave;
+    private javax.swing.JComboBox<String> cboJurnalList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblCreateJurnal;
     private javax.swing.JTextArea txaCreateJurnalDescription;
-    private javax.swing.JTextField txtCreateJurnalJurnalNo;
     // End of variables declaration//GEN-END:variables
 }
