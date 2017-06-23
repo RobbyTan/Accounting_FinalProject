@@ -35,7 +35,6 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     public PnlCreateJurnal(Connection conn,Inject inject) {
         initComponents();
         myConn = conn;
-        this.main=main;
         this.inject=inject;
     }
     
@@ -235,7 +234,7 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
 //                Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
-        inject.main.changeLayout(inject.viewJurnal);
+        inject.getMain().changeLayout(inject.getViewJurnal());
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
 
