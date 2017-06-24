@@ -37,15 +37,21 @@ public class DlgCreateJurnalAddJurnalTransaction extends javax.swing.JDialog {
 
     private void executeAddTransaction() {
         try {
+            if(txtCreateJurnalDebit.getText().isEmpty()){
+                txtCreateJurnalDebit.setText("0");
+            }
+            if(txtCreateJurnalKredit.getText().isEmpty()){
+                txtCreateJurnalKredit.setText("0");
+            }
             myStmt = myConn
-                    .prepareStatement("INSERT INTO jurnal_detail "
-                            + "(`jurnal_no`, `chart_no`, `chart_name`, `debit`, `kredit`)"
-                            + " VALUES (?,?,?,?,?);");
+                    .prepareStatement("INSERT INTO `akuntansi`.`jurnal_detail` (`jurnal_no`, `chart_no`, "
+                            + "`chart_name`, `debit`, `kredit`, `date`) VALUES (?,?,?,?,?,?);");
             myStmt.setString(1, parent.getJurnalNumber());
             myStmt.setString(2, txtCreateJurnalChartNo.getText());
             myStmt.setString(3, cboCreateJurnalChartName.getSelectedItem().toString());
             myStmt.setDouble(4, Double.valueOf(txtCreateJurnalDebit.getText()));
             myStmt.setDouble(5, Double.valueOf(txtCreateJurnalKredit.getText()));
+            myStmt.setString(6, parent.getDateChooserJurnal());
 
             // Execute SQL query
             myStmt.executeUpdate();
@@ -216,6 +222,7 @@ public class DlgCreateJurnalAddJurnalTransaction extends javax.swing.JDialog {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
 //        parent.generateTable();
         executeAddTransaction();
+        dispose();
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void cboCreateJurnalChartNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboCreateJurnalChartNameActionPerformed
