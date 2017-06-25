@@ -5,6 +5,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -27,30 +32,53 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    
+
     Inject inject;
-    
+
     FrmMain main;
-    
-    public PnlCreateJurnal(Connection conn,Inject inject) {
+
+    public PnlCreateJurnal(Connection conn, Inject inject) {
         initComponents();
         myConn = conn;
-        this.inject=inject;
+        this.inject = inject;
     }
-    
+
     public String getJurnalNumber() {
         return "J-" + txtCreateJurnalJurnalNo.getText();
     }
-    
+
+    public String getDateChooserJurnal() {
+
+        try {
+            String dateStr = dtcCreateJurnal.getDate().toString();
+            DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+            Date date = (Date) formatter.parse(dateStr);
+            System.out.println(date);
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            String formatedDate = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DATE);
+            System.out.println("formatedDate : " + formatedDate);
+            return formatedDate;
+        } catch (ParseException ex) {
+            Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return dtcCreateJurnal.getDate().toString();
+    }
+
     public void generateTable() {
         try {
             DefaultTableModel tableModel = (DefaultTableModel) tblCreateJurnal.getModel();
             for (int i = tblCreateJurnal.getRowCount() - 1; i >= 0; i--) {
                 tableModel.removeRow(i);
             }
-            
-            myStmt = myConn.prepareStatement("select * from jurnal_detail;");
+
+            myStmt = myConn.prepareStatement("select * from jurnal_detail where date=? and jurnal_no=?;");
             // Execute SQL query
+            myStmt.setString(1, getDateChooserJurnal());
+            myStmt.setString(2, getJurnalNumber());
+
             myRs = myStmt.executeQuery();
             // Process result set
             if (myRs.isBeforeFirst()) {
@@ -61,6 +89,28 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             }
         } catch (SQLException ex) {
             Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void saveToMaster() {
+        try {
+            myStmt = myConn
+                    .prepareStatement("INSERT INTO `akuntansi`.`jurnal_master` (`jurnal_no`,"
+                            + " `date`, `description`) VALUES (?,?,?);");
+            myStmt.setString(1, getJurnalNumber());
+            myStmt.setString(2, getDateChooserJurnal());
+            myStmt.setString(3, txaCreateJurnalDescription.getText());
+
+            // Execute SQL query
+            myStmt.executeUpdate();
+            txtCreateJurnalJurnalNo.setText("");
+            txaCreateJurnalDescription.setText("");
+            DefaultTableModel tableModel = (DefaultTableModel) tblCreateJurnal.getModel();
+            tableModel.setRowCount(0);
+//            cara kebalikan dtc ke null
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
+            SUtility.msg(this, "Invalid Input!");
         }
     }
 
@@ -84,6 +134,7 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         tblCreateJurnal = new javax.swing.JTable();
         btnCreateJurnalAddTransaction = new javax.swing.JButton();
         btnCreateJurnalSave = new javax.swing.JButton();
+        dtcCreateJurnal = new com.toedter.calendar.JDateChooser();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Date :");
@@ -137,6 +188,8 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             }
         });
 
+        dtcCreateJurnal.setDateFormatString("yyyy-MM-dd");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -164,7 +217,8 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtCreateJurnalJurnalNo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(dtcCreateJurnal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(400, 400, 400)
                         .addComponent(btnCreateJurnalSave, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -174,7 +228,9 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(dtcCreateJurnal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -198,49 +254,36 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtCreateJurnalJurnalNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCreateJurnalJurnalNoActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_txtCreateJurnalJurnalNoActionPerformed
 
     private void btnCreateJurnalAddTransactionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalAddTransactionActionPerformed
-        if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty()) {
+        if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty() && !dtcCreateJurnal.getDate().toString().trim().isEmpty()) {
             DlgCreateJurnalAddJurnalTransaction addTransaction = new DlgCreateJurnalAddJurnalTransaction(this, true, myConn);
             addTransaction.setVisible(true);
+            System.out.println(getDateChooserJurnal());
         } else {
-            SUtility.msg(this, "Jurnal number must not be empty");
+            System.out.println(dtcCreateJurnal.getDate());
+            SUtility.msg(this, "Jurnal number and Date must not be empty");
         }
     }//GEN-LAST:event_btnCreateJurnalAddTransactionActionPerformed
 
     private void btnCreateJurnalSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalSaveActionPerformed
-//         int x = SUtility.msq(this, "Are you sure?");
-//        if (x == 0) {
-//            try {
-//                for (int i = 0; i < tblCreateJurnal.getRowCount(); i++) {
-//                    // Prepare statement
-//
-//                    myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`jurnal_detail` ( `jurnal_no`, `chart_no`, `chart_name`, `debit`, `kredit`) VALUES "
-//                            + "(?,?,?,?,?)");
-//                    myStmt.setString(1,"j-"+txtCreateJurnalJurnalNo.getText());
-//                    myStmt.setString(2, tblCreateJurnal.getValueAt(i, 0).toString());
-//                    myStmt.setString(3, tblCreateJurnal.getValueAt(i, 1).toString());
-//                    myStmt.setDouble(4, Double.valueOf(tblCreateJurnal.getValueAt(i, 2).toString()));
-//                    myStmt.setDouble(5, Double.valueOf(tblCreateJurnal.getValueAt(i, 3).toString()));
-//
-//                    // Execute SQL query
-//                    myStmt.executeUpdate();
-//                    System.out.println("add");
-//                    
-//                }SUtility.msg(this, "Update Saved!");
-//            } catch (SQLException ex) {
-//                Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-        inject.getMain().changeLayout(inject.getViewJurnal());
+        if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty() && !getDateChooserJurnal().trim().isEmpty()) {
+            int x = SUtility.msq(this, "Are you sure?");
+            if (x == 0) {
+                saveToMaster();
+            }
+        } else {
+            SUtility.msg(this, "Fill All Data!");
+        }
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateJurnalAddTransaction;
     private javax.swing.JButton btnCreateJurnalSave;
+    private com.toedter.calendar.JDateChooser dtcCreateJurnal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
