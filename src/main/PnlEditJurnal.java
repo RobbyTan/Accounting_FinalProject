@@ -131,14 +131,12 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                 myStmt.setString(1, cboJurnalList.getSelectedItem().toString());
                 myStmt.setString(2, txtEditJurnalDate.getText());
                 myStmt.setString(3, txaCreateJurnalDescription.getText());
-                
 
                 // Execute SQL query
                 myStmt.executeUpdate();
                 System.out.println("add");
 
             }
-            System.out.println("master");
         } catch (SQLException ex) {
             Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -206,6 +204,8 @@ public class PnlEditJurnal extends javax.swing.JPanel {
             }
         });
 
+        txtEditJurnalDate.setEditable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -269,7 +269,6 @@ public class PnlEditJurnal extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
     private void cboJurnalListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboJurnalListActionPerformed
-//        generateComboBoxJurnalNo();
         generateTable();
     }//GEN-LAST:event_cboJurnalListActionPerformed
 

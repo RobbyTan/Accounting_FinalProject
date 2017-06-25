@@ -33,7 +33,7 @@ public class FrmMain extends javax.swing.JFrame {
     public FrmMain(Connection conn) {
         myConn = conn;
         initComponents();
-        setSize(880,510);
+        setSize(880,530);
         setLocationRelativeTo(null);
         
         inject=new Inject(myConn,this);
@@ -84,7 +84,7 @@ public class FrmMain extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.CardLayout());
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 880, 490);
+        jPanel1.setBounds(0, 0, 880, 510);
 
         jMenu3.setText("User");
 
@@ -243,7 +243,8 @@ public class FrmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        changeLayout(inject.getViewJurnal());
+        inject.getMonthSelect().setPanel(inject.getViewJurnal());
+        changeLayout(inject.getMonthSelect());
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed

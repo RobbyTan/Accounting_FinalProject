@@ -63,7 +63,6 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         } catch (ParseException ex) {
             Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return dtcCreateJurnal.getDate().toString();
     }
 

@@ -27,15 +27,14 @@ public class PnlViewJurnal extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    PnlMonth Dlgmonth;
+
     Inject inject;
     
     public PnlViewJurnal(Connection conn,Inject inject) {
         initComponents();
         myConn=conn;
         this.inject=inject;
-        Dlgmonth=new PnlMonth();
-        Dlgmonth.setVisible(true);
+
     }
 
 
@@ -53,6 +52,11 @@ public class PnlViewJurnal extends javax.swing.JPanel {
         tblViewJurnal = new javax.swing.JTable();
 
         btnViewJurnalDelete.setText("Delete");
+        btnViewJurnalDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnViewJurnalDeleteActionPerformed(evt);
+            }
+        });
 
         tblViewJurnal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -93,25 +97,28 @@ public class PnlViewJurnal extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(144, 144, 144)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(382, 382, 382)
-                        .addComponent(btnViewJurnalDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(144, 144, 144)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(236, 236, 236)
+                        .addComponent(btnViewJurnalDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(170, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(62, 62, 62)
-                .addComponent(btnViewJurnalDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
+                .addGap(88, 88, 88)
+                .addComponent(btnViewJurnalDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnViewJurnalDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewJurnalDeleteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnViewJurnalDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

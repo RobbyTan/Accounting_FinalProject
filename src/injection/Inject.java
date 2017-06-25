@@ -16,6 +16,7 @@ import main.PnlEditJurnal;
 import main.PnlGeneralLedger;
 import main.PnlIncomeStatement;
 import main.PnlInsertInventory;
+import main.PnlMonth;
 import main.PnlTrialBalance;
 import main.PnlViewInventory;
 import main.PnlViewJurnal;
@@ -38,6 +39,10 @@ public class Inject {
     private final PnlIncomeStatement incomeStatement;
     private final PnlEditJurnal editJurnal;
     private final FrmMain main;
+    private final PnlMonth monthSelect;
+    
+    private int month;
+    private int year;
     
     private Connection myConn;
 
@@ -54,6 +59,8 @@ public class Inject {
         balanceSheet=new PnlBalanceSheetReport(myConn,this);
         incomeStatement=new PnlIncomeStatement(myConn,this);
         editJurnal=new PnlEditJurnal(myConn,this);
+        monthSelect=new PnlMonth(this);
+        
         this.main=main;
     }
 
@@ -107,6 +114,28 @@ public class Inject {
 
     public FrmMain getMain() {
         return main;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public PnlMonth getMonthSelect() {
+        return monthSelect;
+    }
+    
+    
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
     
     
