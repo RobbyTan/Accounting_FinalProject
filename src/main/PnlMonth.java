@@ -38,6 +38,9 @@ public class PnlMonth extends javax.swing.JPanel {
     
     private void changeLayoutTo(JPanel panel){
         inject.getMain().changeLayout(panel);
+        if(panel==inject.getViewJurnal()){
+            inject.getViewJurnal().generateTable();
+        }
     }
 
     public void setPanel(JPanel panel) {
