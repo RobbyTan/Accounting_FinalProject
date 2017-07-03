@@ -213,6 +213,7 @@ public class DlgEditJurnalAddJurnalTransaction extends javax.swing.JDialog {
 //        parent.generateTable();
         executeAddTransaction();
         dispose();
+        parent.generateTotal();
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void cboEditJurnalChartNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboEditJurnalChartNameActionPerformed

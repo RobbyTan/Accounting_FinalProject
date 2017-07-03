@@ -4,6 +4,10 @@ import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -29,8 +33,58 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
     public PnlGeneralLedger(Connection conn,Inject inject) {
         initComponents();
         myConn=conn;
-        this.inject=inject;
-        
+        this.inject=inject;  
+    }
+    
+    public void generateData(){
+        txtGeneralLedgerChartName.setText(inject.getGeneralLedgerMonth().getChartName());
+        txtGeneralLedgerChartNo.setText(String.valueOf(inject.getGeneralLedgerMonth().getAccChartNumber()));
+        txtGeneralLedgerPeriod.setText(inject.getGeneralLedgerMonth().getYear()+"-"+ inject.getGeneralLedgerMonth().getMonth());
+    }
+    
+    public void generateTotal(){
+        double tDebit=0;
+        double tKredit=0;
+        for(int row=0;row<tblGeneralLedger.getRowCount();row++){
+            tDebit+=Double.valueOf(tblGeneralLedger.getValueAt(row,3).toString());
+            tKredit+=Double.valueOf(tblGeneralLedger.getValueAt(row,4).toString());
+        }
+        txtGeneralLedgerTotalDebit.setText(String.valueOf(tDebit));
+        txtGeneralLedgerTotalKredit.setText(String.valueOf(tKredit));
+    }
+    
+    public void generateTable(String chartNo,int month,int year){
+         try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblGeneralLedger.getModel();
+            for (int i = tblGeneralLedger.getRowCount() - 1; i >= 0; i--) {
+                tableModel.removeRow(i);
+            }
+
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where chart_no=? &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setString(1,chartNo);
+            myStmt.setInt(2,month);
+            myStmt.setInt(3,year);
+            myRs = myStmt.executeQuery();
+            
+            double balance=0;
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    balance+=myRs.getDouble("debit");
+                    balance-=myRs.getDouble("kredit");
+                    Object data[] = {myRs.getString("date"), myRs.getString("jurnal_no"),myRs.getString("description"), myRs.getDouble("debit"), myRs.getDouble("kredit"),balance};
+                    tableModel.addRow(data);
+                }
+            }
+            
+ 
+        } catch (SQLException ex) {
+            Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex) {
+
+        }
     }
 
     /**
@@ -45,15 +99,16 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        txtGeneralLedgerChartNo = new javax.swing.JTextField();
+        txtGeneralLedgerChartName = new javax.swing.JTextField();
+        txtGeneralLedgerPeriod = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblGeneralLedger = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
+        txtGeneralLedgerTotalDebit = new javax.swing.JTextField();
+        txtGeneralLedgerTotalKredit = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Chart No :");
@@ -64,13 +119,18 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Period :");
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        txtGeneralLedgerChartNo.setEditable(false);
+
+        txtGeneralLedgerChartName.setEditable(false);
+        txtGeneralLedgerChartName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                txtGeneralLedgerChartNameActionPerformed(evt);
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        txtGeneralLedgerPeriod.setEditable(false);
+
+        tblGeneralLedger.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -93,13 +153,13 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-            jTable1.getColumnModel().getColumn(5).setResizable(false);
+        jScrollPane1.setViewportView(tblGeneralLedger);
+        if (tblGeneralLedger.getColumnModel().getColumnCount() > 0) {
+            tblGeneralLedger.getColumnModel().getColumn(0).setResizable(false);
+            tblGeneralLedger.getColumnModel().getColumn(1).setResizable(false);
+            tblGeneralLedger.getColumnModel().getColumn(2).setResizable(false);
+            tblGeneralLedger.getColumnModel().getColumn(3).setResizable(false);
+            tblGeneralLedger.getColumnModel().getColumn(5).setResizable(false);
         }
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -108,6 +168,17 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("Total Kredit :");
 
+        txtGeneralLedgerTotalDebit.setEditable(false);
+
+        txtGeneralLedgerTotalKredit.setEditable(false);
+
+        jButton1.setText("Back");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,78 +186,90 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(287, 287, 287)
+                        .addContainerGap()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(159, 159, 159)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField3)
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtGeneralLedgerPeriod)
+                            .addComponent(txtGeneralLedgerChartName)
+                            .addComponent(txtGeneralLedgerChartNo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(278, 278, 278)
+                        .addGap(118, 118, 118)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 607, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(277, 277, 277)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtGeneralLedgerTotalKredit, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(118, 118, 118)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 607, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtGeneralLedgerTotalDebit, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(155, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtGeneralLedgerChartNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1)))
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtGeneralLedgerChartName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtGeneralLedgerPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtGeneralLedgerTotalDebit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(72, Short.MAX_VALUE))
+                    .addComponent(txtGeneralLedgerTotalKredit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(97, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void txtGeneralLedgerChartNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGeneralLedgerChartNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_txtGeneralLedgerChartNameActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        inject.getMain().changeLayout(inject.getGeneralLedgerMonth());
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTable tblGeneralLedger;
+    private javax.swing.JTextField txtGeneralLedgerChartName;
+    private javax.swing.JTextField txtGeneralLedgerChartNo;
+    private javax.swing.JTextField txtGeneralLedgerPeriod;
+    private javax.swing.JTextField txtGeneralLedgerTotalDebit;
+    private javax.swing.JTextField txtGeneralLedgerTotalKredit;
     // End of variables declaration//GEN-END:variables
 }

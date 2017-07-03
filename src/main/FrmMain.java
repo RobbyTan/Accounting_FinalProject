@@ -248,7 +248,8 @@ public class FrmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        changeLayout(inject.getGeneralLedger());
+        changeLayout(inject.getGeneralLedgerMonth());
+        inject.getGeneralLedgerMonth().generateComboBoxChartName();
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed

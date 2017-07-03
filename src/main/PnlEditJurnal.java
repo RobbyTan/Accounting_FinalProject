@@ -60,11 +60,24 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                     txaCreateJurnalDescription.setText(myRs.getString("description"));
                 }
             }
+            
+            generateTotal();
         } catch (SQLException ex) {
             Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
 
         }
+    }
+
+    public void generateTotal() {
+        double tDebit = 0;
+        double tKredit = 0;
+        for (int row = 0; row < tblEditJurnal.getRowCount(); row++) {
+            tDebit += Double.valueOf(tblEditJurnal.getValueAt(row, 2).toString());
+            tKredit += Double.valueOf(tblEditJurnal.getValueAt(row, 3).toString());
+        }
+        txtEditJurnalTotalDebit.setText(String.valueOf(tDebit));
+        txtEditJurnalTotalKredit.setText(String.valueOf(tKredit));
     }
 
     public void generateComboBoxJurnalNo() {
@@ -177,6 +190,10 @@ public class PnlEditJurnal extends javax.swing.JPanel {
         txtEditJurnalDate = new javax.swing.JTextField();
         btnEditJurnalAddTransaction = new javax.swing.JButton();
         btnEditJurnalDeleteTransaction = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txtEditJurnalTotalDebit = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtEditJurnalTotalKredit = new javax.swing.JTextField();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Date :");
@@ -198,7 +215,15 @@ public class PnlEditJurnal extends javax.swing.JPanel {
             new String [] {
                 "Chart No", "Chart Name", "Debit", "Kredit"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(tblEditJurnal);
         if (tblEditJurnal.getColumnModel().getColumnCount() > 0) {
             tblEditJurnal.getColumnModel().getColumn(0).setResizable(false);
@@ -236,6 +261,16 @@ public class PnlEditJurnal extends javax.swing.JPanel {
             }
         });
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel4.setText("Total Debit :");
+
+        txtEditJurnalTotalDebit.setEditable(false);
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setText("Total Kredit :");
+
+        txtEditJurnalTotalKredit.setEditable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -261,17 +296,24 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                                     .addComponent(btnEditJurnalAddTransaction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(113, 113, 113))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(21, 21, 21)
+                                .addComponent(txtEditJurnalTotalDebit, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel5)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtEditJurnalTotalKredit, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(125, 125, 125)
+                                .addComponent(btnCreateJurnalSave))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(99, 99, 99))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(383, 383, 383)
-                .addComponent(btnCreateJurnalSave)
-                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtEditJurnalDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -288,21 +330,32 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(cboJurnalList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEditJurnalAddTransaction, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(btnEditJurnalDeleteTransaction)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCreateJurnalSave)
-                .addGap(38, 38, 38))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtEditJurnalTotalDebit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5)
+                        .addComponent(txtEditJurnalTotalKredit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCreateJurnalSave)))
+                .addGap(41, 41, 41))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCreateJurnalSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalSaveActionPerformed
-        int x = SUtility.msq(this, "Are you sure?");
-        if (x == 0) {
-            editTableMaster();
-            editTableDetail();
+        generateTotal();
+        if (txtEditJurnalTotalDebit.getText().equals(txtEditJurnalTotalKredit.getText())) {
+            int x = SUtility.msq(this, "Are you sure?");
+            if (x == 0) {
+                editTableMaster();
+                editTableDetail();
+            }
+        } else {
+            SUtility.msg(this, "unbalanced total kredit and debit");
         }
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
@@ -321,6 +374,7 @@ public class PnlEditJurnal extends javax.swing.JPanel {
         int row = tblEditJurnal.getSelectedRow();
         DefaultTableModel tableModel = (DefaultTableModel) tblEditJurnal.getModel();
         tableModel.removeRow(row);
+        generateTotal();
     }//GEN-LAST:event_btnEditJurnalDeleteTransactionActionPerformed
 
 
@@ -332,10 +386,14 @@ public class PnlEditJurnal extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblEditJurnal;
     private javax.swing.JTextArea txaCreateJurnalDescription;
     private javax.swing.JTextField txtEditJurnalDate;
+    private javax.swing.JTextField txtEditJurnalTotalDebit;
+    private javax.swing.JTextField txtEditJurnalTotalKredit;
     // End of variables declaration//GEN-END:variables
 }
