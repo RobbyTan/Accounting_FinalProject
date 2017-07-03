@@ -34,7 +34,7 @@ public class PnlViewJurnal extends javax.swing.JPanel {
         initComponents();
         myConn=conn;
         this.inject=inject;
-        generateTable();
+//        generateTable();
     }
 
 
@@ -89,14 +89,14 @@ public class PnlViewJurnal extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Jurnal No", "Date", "Chart No", "Chart Name", "Description", "Total Debit", "Total Kredit"
+                "Jurnal No", "Date", "Description", "Total Debit", "Total Kredit"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -114,8 +114,6 @@ public class PnlViewJurnal extends javax.swing.JPanel {
             tblViewJurnal.getColumnModel().getColumn(2).setResizable(false);
             tblViewJurnal.getColumnModel().getColumn(3).setResizable(false);
             tblViewJurnal.getColumnModel().getColumn(4).setResizable(false);
-            tblViewJurnal.getColumnModel().getColumn(5).setResizable(false);
-            tblViewJurnal.getColumnModel().getColumn(6).setResizable(false);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -123,22 +121,22 @@ public class PnlViewJurnal extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(144, 144, 144)
+                .addGap(146, 146, 146)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(236, 236, 236)
                         .addComponent(btnViewJurnalDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 566, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(170, Short.MAX_VALUE))
+                .addContainerGap(168, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(88, 88, 88)
+                .addGap(33, 33, 33)
                 .addComponent(btnViewJurnalDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
