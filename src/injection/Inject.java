@@ -122,9 +122,7 @@ public class Inject {
 
     public PnlMonth getMonthSelect() {
         return monthSelect;
-    }
-    
-    
+    }  
 
     public void setMonth(int month) {
         this.month = month;

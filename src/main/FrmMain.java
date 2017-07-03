@@ -84,7 +84,7 @@ public class FrmMain extends javax.swing.JFrame {
 
         jPanel1.setLayout(new java.awt.CardLayout());
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 880, 510);
+        jPanel1.setBounds(0, 0, 880, 490);
 
         jMenu3.setText("User");
 
@@ -268,7 +268,8 @@ public class FrmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
-        changeLayout(inject.getEditJurnal());
+        inject.getMonthSelect().setPanel(inject.getEditJurnal());
+        changeLayout(inject.getMonthSelect());    
     }//GEN-LAST:event_jMenuItem12ActionPerformed
 
     /**

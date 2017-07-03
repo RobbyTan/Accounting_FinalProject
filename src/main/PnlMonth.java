@@ -27,9 +27,6 @@ public class PnlMonth extends javax.swing.JPanel {
         this.inject=inject;
     }
 
-    public String getMonth(){
-        return String.valueOf(mtcMonth.getMonth());
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -40,6 +37,9 @@ public class PnlMonth extends javax.swing.JPanel {
         inject.getMain().changeLayout(panel);
         if(panel==inject.getViewJurnal()){
             inject.getViewJurnal().generateTable();
+        }
+        if(panel==inject.getEditJurnal()){
+            inject.getEditJurnal().generateComboBoxJurnalNo();
         }
     }
 
@@ -97,7 +97,7 @@ public class PnlMonth extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnMonthNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMonthNextActionPerformed
-        inject.setMonth(mtcMonth.getMonth());
+        inject.setMonth(mtcMonth.getMonth()+1);
         inject.setYear(yrcYear.getYear());
         changeLayoutTo(panel);
     }//GEN-LAST:event_btnMonthNextActionPerformed

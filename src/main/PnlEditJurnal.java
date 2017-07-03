@@ -35,7 +35,6 @@ public class PnlEditJurnal extends javax.swing.JPanel {
         initComponents();
         myConn = conn;
         this.inject = inject;
-        generateComboBoxJurnalNo();
     }
 
     public void generateTable() {
@@ -45,9 +44,12 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                 tableModel.removeRow(i);
             }
 
-            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where jurnal_no=?;");
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where jurnal_no=? && extract(month from date)=? && "
+                    + "extract(year from date)=?;");
             // Execute SQL query
             myStmt.setString(1, cboJurnalList.getSelectedItem().toString());
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
             myRs = myStmt.executeQuery();
             // Process result set
             if (myRs.isBeforeFirst()) {
@@ -60,14 +62,20 @@ public class PnlEditJurnal extends javax.swing.JPanel {
             }
         } catch (SQLException ex) {
             Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex) {
+
         }
     }
 
     public void generateComboBoxJurnalNo() {
         try {
+            System.out.println("generate " + inject.getMonth() + inject.getYear());
             cboJurnalList.removeAllItems();
-            myStmt = myConn.prepareStatement("select * from jurnal_fulldata group by jurnal_no");
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where extract(month from date)=? && "
+                    + "extract(year from date)=? group by jurnal_no ;");
             // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
             myRs = myStmt.executeQuery();
             ArrayList<String> jurnalNo = new ArrayList<>();
             // Process result set
@@ -78,15 +86,20 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                 cboJurnalList.addItem(a);
             }
             generateTable();
+
         } catch (SQLException ex) {
             Logger.getLogger(DlgCreateJurnalAddJurnalTransaction.class.getName()).log(Level.SEVERE, null, ex);
+
         }
     }
 
     private void editTableDetail() {
         try {
-            myStmt = myConn.prepareStatement("delete from jurnal_detail where jurnal_no=?");
+            myStmt = myConn.prepareStatement("delete from jurnal_detail where jurnal_no=? && extract(month from date)=? && "
+                    + "extract(year from date)=?;");
             myStmt.setString(1, cboJurnalList.getSelectedItem().toString());
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
 
             // Execute SQL query
             myStmt.executeUpdate();
@@ -117,26 +130,27 @@ public class PnlEditJurnal extends javax.swing.JPanel {
 
     private void editTableMaster() {
         try {
-            myStmt = myConn.prepareStatement("delete from jurnal_master where jurnal_no=?");
+            myStmt = myConn.prepareStatement("delete from jurnal_master where jurnal_no=? && extract(month from date)=? && "
+                    + "extract(year from date)=?;");
             myStmt.setString(1, cboJurnalList.getSelectedItem().toString());
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
 
             // Execute SQL query
             myStmt.executeUpdate();
             System.out.println("delete");
-            for (int i = 0; i < tblEditJurnal.getRowCount(); i++) {
-                // Prepare statement
+            // Prepare statement
 
-                myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`jurnal_master` (`jurnal_no`, "
-                        + "`date`, `description`) VALUES (?,?,?);");
-                myStmt.setString(1, cboJurnalList.getSelectedItem().toString());
-                myStmt.setString(2, txtEditJurnalDate.getText());
-                myStmt.setString(3, txaCreateJurnalDescription.getText());
+            myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`jurnal_master` (`jurnal_no`, "
+                    + "`date`, `description`) VALUES (?,?,?);");
+            myStmt.setString(1, cboJurnalList.getSelectedItem().toString());
+            myStmt.setString(2, txtEditJurnalDate.getText());
+            myStmt.setString(3, txaCreateJurnalDescription.getText());
 
-                // Execute SQL query
-                myStmt.executeUpdate();
-                System.out.println("add");
+            // Execute SQL query
+            myStmt.executeUpdate();
+            System.out.println("add");
 
-            }
         } catch (SQLException ex) {
             Logger.getLogger(PnlAccountChart.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -161,6 +175,8 @@ public class PnlEditJurnal extends javax.swing.JPanel {
         btnCreateJurnalSave = new javax.swing.JButton();
         cboJurnalList = new javax.swing.JComboBox<>();
         txtEditJurnalDate = new javax.swing.JTextField();
+        btnEditJurnalAddTransaction = new javax.swing.JButton();
+        btnEditJurnalDeleteTransaction = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Date :");
@@ -206,16 +222,26 @@ public class PnlEditJurnal extends javax.swing.JPanel {
 
         txtEditJurnalDate.setEditable(false);
 
+        btnEditJurnalAddTransaction.setText("Add Transaction");
+        btnEditJurnalAddTransaction.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditJurnalAddTransactionActionPerformed(evt);
+            }
+        });
+
+        btnEditJurnalDeleteTransaction.setText("Delete Transaction");
+        btnEditJurnalDeleteTransaction.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditJurnalDeleteTransactionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(387, 387, 387)
-                .addComponent(btnCreateJurnalSave)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(89, Short.MAX_VALUE)
+                .addGap(89, 89, 89)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(158, 158, 158)
@@ -225,13 +251,22 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cboJurnalList, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEditJurnalDate, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(txtEditJurnalDate, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(48, 48, 48)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnEditJurnalDeleteTransaction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnEditJurnalAddTransaction, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(113, 113, 113))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(99, 99, 99))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(383, 383, 383)
+                .addComponent(btnCreateJurnalSave)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -250,13 +285,16 @@ public class PnlEditJurnal extends javax.swing.JPanel {
                                 .addComponent(jLabel3))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(14, 14, 14)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(50, 50, 50)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(cboJurnalList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(cboJurnalList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEditJurnalAddTransaction, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addComponent(btnEditJurnalDeleteTransaction)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnCreateJurnalSave)
-                .addGap(26, 26, 26))
+                .addGap(38, 38, 38))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -272,9 +310,24 @@ public class PnlEditJurnal extends javax.swing.JPanel {
         generateTable();
     }//GEN-LAST:event_cboJurnalListActionPerformed
 
+    private void btnEditJurnalAddTransactionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJurnalAddTransactionActionPerformed
+
+        DlgEditJurnalAddJurnalTransaction addTransaction = new DlgEditJurnalAddJurnalTransaction(this, true, myConn, tblEditJurnal);
+        addTransaction.setVisible(true);
+
+    }//GEN-LAST:event_btnEditJurnalAddTransactionActionPerformed
+
+    private void btnEditJurnalDeleteTransactionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditJurnalDeleteTransactionActionPerformed
+        int row = tblEditJurnal.getSelectedRow();
+        DefaultTableModel tableModel = (DefaultTableModel) tblEditJurnal.getModel();
+        tableModel.removeRow(row);
+    }//GEN-LAST:event_btnEditJurnalDeleteTransactionActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateJurnalSave;
+    private javax.swing.JButton btnEditJurnalAddTransaction;
+    private javax.swing.JButton btnEditJurnalDeleteTransaction;
     private javax.swing.JComboBox<String> cboJurnalList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
