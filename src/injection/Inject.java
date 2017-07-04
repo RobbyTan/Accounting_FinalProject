@@ -14,6 +14,7 @@ import main.PnlCreateJurnal;
 import main.PnlDeleteUser;
 import main.PnlEditJurnal;
 import main.PnlGeneralLedger;
+import main.PnlGeneralLedgerMonth;
 import main.PnlIncomeStatement;
 import main.PnlInsertInventory;
 import main.PnlMonth;
@@ -32,6 +33,7 @@ public class Inject {
     private final PnlCreateJurnal createJurnal;
     private final PnlViewJurnal viewJurnal ;
     private final PnlGeneralLedger generalLedger;
+    private final PnlGeneralLedgerMonth generalLedgerMonth;
     private final PnlTrialBalance trialBalance;
     private final PnlInsertInventory insertInventory;
     private final PnlViewInventory viewInventory;
@@ -53,6 +55,7 @@ public class Inject {
         createJurnal=new PnlCreateJurnal(myConn,this);
         viewJurnal=new PnlViewJurnal(myConn,this);
         generalLedger=new PnlGeneralLedger(myConn,this);
+        generalLedgerMonth=new PnlGeneralLedgerMonth(myConn, this);
         trialBalance=new PnlTrialBalance(myConn,this);
         insertInventory=new PnlInsertInventory(myConn,this);
         viewInventory=new PnlViewInventory(myConn,this);
@@ -87,6 +90,10 @@ public class Inject {
     public PnlGeneralLedger getGeneralLedger() {
         return generalLedger;
     }
+    
+    public PnlGeneralLedgerMonth getGeneralLedgerMonth() {
+        return generalLedgerMonth;
+    }
 
     public PnlTrialBalance getTrialBalance() {
         return trialBalance;
@@ -115,7 +122,7 @@ public class Inject {
     public FrmMain getMain() {
         return main;
     }
-
+    
     public int getMonth() {
         return month;
     }
