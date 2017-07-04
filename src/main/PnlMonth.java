@@ -41,6 +41,9 @@ public class PnlMonth extends javax.swing.JPanel {
         if(panel==inject.getEditJurnal()){
             inject.getEditJurnal().generateComboBoxJurnalNo();
         }
+        if(panel==inject.getTrialBalance()){
+            inject.getTrialBalance().generateTable();
+        }
     }
 
     public void setPanel(JPanel panel) {
