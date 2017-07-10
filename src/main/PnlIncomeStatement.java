@@ -9,6 +9,11 @@ import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -22,13 +27,143 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    
+
     Inject inject;
-    
-    public PnlIncomeStatement(Connection conn,Inject inject) {
+
+    public PnlIncomeStatement(Connection conn, Inject inject) {
         initComponents();
-        myConn=conn;
-        this.inject=inject;
+        myConn = conn;
+        this.inject = inject;
+    }
+
+    public void generateTable() {
+        
+        generateSalesRevenueTable();
+        generateOperationalTable();
+    }
+
+    private void generateSalesRevenueTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) tblSalesRevenue.getModel();
+            for (int i = tblSalesRevenue.getRowCount() - 1; i >= 0; i--) {
+                tableModel.removeRow(i);
+            }
+        try {
+            myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='sales' &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+            
+            ArrayList<String> chart_name=new ArrayList<>();
+            
+            System.out.println(myRs.toString());
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    chart_name.add(myRs.getString("chart_name"));
+                }
+            }
+            for(String a:chart_name){
+                generateSalesRevenueRow(a);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlIncomeStatement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void generateOperationalTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) tblOperational.getModel();
+            for (int i = tblOperational.getRowCount() - 1; i >= 0; i--) {
+                tableModel.removeRow(i);
+            }
+        try {
+            myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='operational' &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+            
+            ArrayList<String> chart_name=new ArrayList<>();
+            
+            System.out.println(myRs.toString());
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    chart_name.add(myRs.getString("chart_name"));
+                }
+            }
+            for(String a:chart_name){
+                generateOperationalRow(a);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlIncomeStatement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void generateSalesRevenueRow(String chart_name) {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblSalesRevenue.getModel();
+
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where chart_name=? &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setString(1, chart_name);
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            double debit = 0,
+                   kredit = 0,
+                   ending = 0;
+            String chartName = "";
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    debit += myRs.getDouble("debit");
+                    kredit += myRs.getDouble("kredit");
+                    chartName = myRs.getString("chart_name");
+                }
+                ending = kredit - debit;
+                Object data[] = {chartName, ending};
+                tableModel.addRow(data);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlIncomeStatement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void generateOperationalRow(String chart_name) {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblOperational.getModel();
+
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where chart_name=? &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setString(1, chart_name);
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            double debit = 0,
+                   kredit = 0,
+                   ending = 0;
+            String chartName = "";
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    debit += myRs.getDouble("debit");
+                    kredit += myRs.getDouble("kredit");
+                    chartName = myRs.getString("chart_name");
+                }
+                ending = debit-kredit;
+                Object data[] = {chartName, ending};
+                tableModel.addRow(data);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlIncomeStatement.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -43,14 +178,14 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblSalesRevenue = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tblOperational = new javax.swing.JTable();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -60,7 +195,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
 
         jLabel2.setText("Sales Revenue :");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblSalesRevenue.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -83,10 +218,10 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
+        jScrollPane1.setViewportView(tblSalesRevenue);
+        if (tblSalesRevenue.getColumnModel().getColumnCount() > 0) {
+            tblSalesRevenue.getColumnModel().getColumn(0).setResizable(false);
+            tblSalesRevenue.getColumnModel().getColumn(1).setResizable(false);
         }
 
         jLabel3.setText("Total sales revenue :");
@@ -124,7 +259,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
 
         jLabel5.setText("Total Cost of good sold :");
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tblOperational.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -147,10 +282,10 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
-        if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setResizable(false);
-            jTable3.getColumnModel().getColumn(1).setResizable(false);
+        jScrollPane3.setViewportView(tblOperational);
+        if (tblOperational.getColumnModel().getColumnCount() > 0) {
+            tblOperational.getColumnModel().getColumn(0).setResizable(false);
+            tblOperational.getColumnModel().getColumn(1).setResizable(false);
         }
 
         jLabel6.setText("Operational Expenditure :");
@@ -234,8 +369,8 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
+    private javax.swing.JTable tblOperational;
+    private javax.swing.JTable tblSalesRevenue;
     // End of variables declaration//GEN-END:variables
 }

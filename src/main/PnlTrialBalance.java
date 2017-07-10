@@ -66,7 +66,7 @@ public class PnlTrialBalance extends javax.swing.JPanel {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PnlTrialBalance.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
 
         }

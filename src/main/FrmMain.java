@@ -264,11 +264,13 @@ public class FrmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        changeLayout(inject.getIncomeStatement());
+        inject.getMonthSelect().setPanel(inject.getIncomeStatement());
+        changeLayout(inject.getMonthSelect());
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
-         changeLayout(inject.getBalanceSheet());
+        inject.getMonthSelect().setPanel(inject.getBalanceSheet());
+        changeLayout(inject.getMonthSelect()); 
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
