@@ -9,6 +9,11 @@ import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import util.SUtility;
 
 /**
  *
@@ -22,13 +27,95 @@ public class PnlInsertInventory extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    
+
     Inject inject;
-    
-    public PnlInsertInventory(Connection conn,Inject inject) {
+
+    public PnlInsertInventory(Connection conn, Inject inject) {
         initComponents();
-        myConn=conn;
-        this.inject=inject;
+        myConn = conn;
+        this.inject = inject;
+    }
+
+    public void insertToTable(String code, String description, Double price, Integer opening, Integer in, Integer out) {
+        int ending = 0;
+        double value = 0;
+        ending = opening + in - out;
+        value = price * ending;
+        Object data[] = {code,
+            description,
+            price,
+            opening,
+            in,
+            out, ending, value
+        };
+        DefaultTableModel tableModel = (DefaultTableModel) tblInsertInventory.getModel();
+        tableModel.addRow(data);
+    }
+    
+    private void saveToDatabase(){
+        try {
+            myStmt = myConn.prepareStatement("delete from inventory where extract(month from date)=? && "
+                    + "extract(year from date)=?;");
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+
+            // Execute SQL query
+            myStmt.executeUpdate();
+            System.out.println("delete");
+            // Prepare statement
+
+            for (int i = 0; i < tblInsertInventory.getRowCount(); i++) {
+                // Prepare statement
+
+                myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`inventory`"
+                        + " (`Id`, `Description`, `Price`, `Opening`, `In`, `Out`, `Ending`, `Value`, `Date`)"
+                        + " VALUES (?,?,?,?,?,?,?,?,?);");
+                myStmt.setString(1, tblInsertInventory.getValueAt(i, 0).toString());
+                myStmt.setString(2, tblInsertInventory.getValueAt(i, 1).toString());
+                myStmt.setString(3, tblInsertInventory.getValueAt(i, 2).toString());
+                myStmt.setString(4, tblInsertInventory.getValueAt(i, 3).toString());
+                myStmt.setString(5, tblInsertInventory.getValueAt(i, 4).toString());
+                myStmt.setString(6, tblInsertInventory.getValueAt(i, 5).toString());
+                myStmt.setString(7, tblInsertInventory.getValueAt(i, 6).toString());
+                myStmt.setString(8, tblInsertInventory.getValueAt(i, 7).toString());
+                myStmt.setString(9, inject.getYear()+"-"+inject.getMonth()+"-28");
+                
+                // Execute SQL query
+                myStmt.executeUpdate();
+                System.out.println("add");
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlInsertInventory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void generateTable(){
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblInsertInventory.getModel();
+            for (int i = tblInsertInventory.getRowCount() - 1; i >= 0; i--) {
+                tableModel.removeRow(i);
+            }
+
+            myStmt = myConn.prepareStatement("select * from inventory where extract(month from date)=? && "
+                    + "extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            // Process result set
+            while (myRs.next()) {
+                Object data[] = {myRs.getString("id"), myRs.getString("description"),
+                    myRs.getDouble("price"),myRs.getInt("opening"),myRs.getInt("in"),
+                    myRs.getInt("out"),myRs.getInt("ending"),myRs.getDouble("value")};
+                tableModel.addRow(data);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlViewInventory.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -41,25 +128,24 @@ public class PnlInsertInventory extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        tblInsertInventory = new javax.swing.JTable();
+        btnInventoryInsert = new javax.swing.JButton();
+        btnInventoryDelete = new javax.swing.JButton();
+        btnInventorySave = new javax.swing.JButton();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblInsertInventory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Id", "Kode Inventory", "Description", "Id Produk", "Harga", "Qty"
+                "Id", "Description", "Price", "Opening", "In", "Out", "Ending", "Value"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -70,23 +156,38 @@ public class PnlInsertInventory extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-            jTable1.getColumnModel().getColumn(4).setResizable(false);
-            jTable1.getColumnModel().getColumn(5).setResizable(false);
+        jScrollPane1.setViewportView(tblInsertInventory);
+        if (tblInsertInventory.getColumnModel().getColumnCount() > 0) {
+            tblInsertInventory.getColumnModel().getColumn(0).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(1).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(2).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(3).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(4).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(5).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(6).setResizable(false);
+            tblInsertInventory.getColumnModel().getColumn(7).setResizable(false);
         }
 
-        jButton1.setText("Insert");
+        btnInventoryInsert.setText("Insert");
+        btnInventoryInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInventoryInsertActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Edit");
+        btnInventoryDelete.setText("delete");
+        btnInventoryDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInventoryDeleteActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("delete");
-
-        jButton4.setText("Generate Data");
+        btnInventorySave.setText("Save");
+        btnInventorySave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInventorySaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -94,41 +195,65 @@ public class PnlInsertInventory extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(259, 259, 259)
-                .addComponent(jButton4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
-                .addGap(43, 43, 43))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 421, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnInventoryInsert)
+                                .addGap(78, 78, 78)
+                                .addComponent(btnInventoryDelete)
+                                .addGap(43, 43, 43))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnInventorySave)
+                                .addGap(392, 392, 392))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 828, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(26, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(btnInventoryInsert)
+                    .addComponent(btnInventoryDelete))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 371, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnInventorySave)
+                .addGap(16, 16, 16))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnInventoryInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryInsertActionPerformed
+        DlgAddInventory dlgAddInventory = new DlgAddInventory(this, true, myConn);
+        dlgAddInventory.setVisible(true);
+    }//GEN-LAST:event_btnInventoryInsertActionPerformed
+
+    private void btnInventoryDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventoryDeleteActionPerformed
+        int row = tblInsertInventory.getSelectedRow();
+        if (row >= 0) {
+            DefaultTableModel tableModel = (DefaultTableModel) tblInsertInventory.getModel();
+            tableModel.removeRow(row);
+        }else{
+            SUtility.msg(this, "Select A Row!");
+        }
+    }//GEN-LAST:event_btnInventoryDeleteActionPerformed
+
+    private void btnInventorySaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventorySaveActionPerformed
+        int x = SUtility.msq(this, "Are you sure?");
+            if (x == 0) {
+                saveToDatabase();
+            }
+    }//GEN-LAST:event_btnInventorySaveActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnInventoryDelete;
+    private javax.swing.JButton btnInventoryInsert;
+    private javax.swing.JButton btnInventorySave;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblInsertInventory;
     // End of variables declaration//GEN-END:variables
 }

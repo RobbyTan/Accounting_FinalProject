@@ -36,29 +36,18 @@ public class DlgCreateJurnalAddJurnalTransaction extends javax.swing.JDialog {
     }
 
     private void executeAddTransaction() {
-        try {
-            if(txtCreateJurnalDebit.getText().isEmpty()){
+            if (txtCreateJurnalDebit.getText().isEmpty()) {
                 txtCreateJurnalDebit.setText("0");
             }
-            if(txtCreateJurnalKredit.getText().isEmpty()){
+            if (txtCreateJurnalKredit.getText().isEmpty()) {
                 txtCreateJurnalKredit.setText("0");
             }
-            myStmt = myConn
-                    .prepareStatement("INSERT INTO `akuntansi`.`jurnal_detail` (`jurnal_no`, `chart_no`, "
-                            + "`chart_name`, `debit`, `kredit`, `date`) VALUES (?,?,?,?,?,?);");
-            myStmt.setString(1, parent.getJurnalNumber());
-            myStmt.setString(2, txtCreateJurnalChartNo.getText());
-            myStmt.setString(3, cboCreateJurnalChartName.getSelectedItem().toString());
-            myStmt.setDouble(4, Double.valueOf(txtCreateJurnalDebit.getText()));
-            myStmt.setDouble(5, Double.valueOf(txtCreateJurnalKredit.getText()));
-            myStmt.setString(6, parent.getDateChooserJurnal());
 
             // Execute SQL query
-            myStmt.executeUpdate();
-            parent.generateTable();
-        } catch (SQLException ex) {
-            Logger.getLogger(DlgCreateJurnalAddJurnalTransaction.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            parent.addTableRow(txtCreateJurnalChartNo.getText(), cboCreateJurnalChartName.getSelectedItem().toString(),
+                     Double.valueOf(txtCreateJurnalDebit.getText()), Double.valueOf(txtCreateJurnalKredit.getText()));
+            parent.generateTotal();
+
     }
 
     private void generateComboBoxChartName() {

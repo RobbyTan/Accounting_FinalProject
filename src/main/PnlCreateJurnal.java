@@ -53,12 +53,10 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             String dateStr = dtcCreateJurnal.getDate().toString();
             DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
             Date date = (Date) formatter.parse(dateStr);
-            System.out.println(date);
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
             String formatedDate = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DATE);
-            System.out.println("formatedDate : " + formatedDate);
             return formatedDate;
         } catch (ParseException ex) {
             Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,7 +65,7 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         return null;
     }
 
-    private void generateTotal() {
+    public void generateTotal() {
         double tDebit = 0;
         double tKredit = 0;
         for (int row = 0; row < tblCreateJurnal.getRowCount(); row++) {
@@ -78,30 +76,11 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         txtCreateJurnalTotalKredit.setText(String.valueOf(tKredit));
     }
 
-    public void generateTable() {
-        try {
-            DefaultTableModel tableModel = (DefaultTableModel) tblCreateJurnal.getModel();
-            for (int i = tblCreateJurnal.getRowCount() - 1; i >= 0; i--) {
-                tableModel.removeRow(i);
-            }
-
-            myStmt = myConn.prepareStatement("select * from jurnal_detail where date=? and jurnal_no=?;");
-            // Execute SQL query
-            myStmt.setString(1, getDateChooserJurnal());
-            myStmt.setString(2, getJurnalNumber());
-
-            myRs = myStmt.executeQuery();
-            // Process result set
-            if (myRs.isBeforeFirst()) {
-                while (myRs.next()) {
-                    Object data[] = {myRs.getString("chart_no"), myRs.getString("chart_name"), myRs.getDouble("debit"), myRs.getDouble("kredit")};
-                    tableModel.addRow(data);
-                }
-            }
-            generateTotal();
-        } catch (SQLException ex) {
-            Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void addTableRow(String no, String name, double debit, double kredit) {
+        DefaultTableModel tableModel = (DefaultTableModel) tblCreateJurnal.getModel();
+        Object data[] = {no, name, debit, kredit};
+        tableModel.addRow(data);
+        generateTotal();
     }
 
     private void saveToMaster() {
@@ -123,6 +102,31 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
             SUtility.msg(this, "Invalid Input!");
+        }
+    }
+
+    private void saveToDetail() {
+        try {
+            for (int i = 0; i < tblCreateJurnal.getRowCount(); i++) {
+                // Prepare statement
+
+                myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`jurnal_detail` "
+                        + "(`jurnal_no`, `chart_no`, `chart_name`, `debit`, `kredit`, `date`) VALUES"
+                        + " (?,?,?,?,?,?);");
+                myStmt.setString(1, "J-"+txtCreateJurnalJurnalNo.getText());
+                myStmt.setString(2, tblCreateJurnal.getValueAt(i, 0).toString());
+                myStmt.setString(3, tblCreateJurnal.getValueAt(i, 1).toString());
+                myStmt.setString(4, tblCreateJurnal.getValueAt(i, 2).toString());
+                myStmt.setString(5, tblCreateJurnal.getValueAt(i, 3).toString());
+                myStmt.setString(6, getDateChooserJurnal());
+                // Execute SQL query
+                myStmt.executeUpdate();
+                System.out.println("add");
+
+            }
+            SUtility.msg(this, "Update Saved!");
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -307,17 +311,19 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCreateJurnalAddTransactionActionPerformed
 
     private void btnCreateJurnalSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalSaveActionPerformed
+        generateTotal();
         if (txtCreateJurnalTotalDebit.getText().equals(txtCreateJurnalTotalKredit.getText())) {
             if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty() && !getDateChooserJurnal().trim().isEmpty()) {
                 int x = SUtility.msq(this, "Are you sure?");
                 if (x == 0) {
+                    saveToDetail();
                     saveToMaster();
                 }
             } else {
                 SUtility.msg(this, "Fill All Data!");
             }
         } else {
-                SUtility.msg(this, "unbalanced total kredit and debit");
+            SUtility.msg(this, "unbalanced total kredit and debit");
         }
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
