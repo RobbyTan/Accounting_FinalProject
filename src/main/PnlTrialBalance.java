@@ -131,7 +131,7 @@ public class PnlTrialBalance extends javax.swing.JPanel {
                 }
             }
             for (String c : chartNo) {
-                generateTableTemporaryLastMonth(c);
+//                generateTableTemporaryLastMonth(c);
                 generateTableTemporary(c);
             }
             generateTotal();

@@ -235,7 +235,8 @@ public class FrmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
-        changeLayout(inject.getViewInventory());
+        inject.getMonthSelect().setPanel(inject.getViewInventory());
+        changeLayout(inject.getMonthSelect());
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -258,7 +259,8 @@ public class FrmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        changeLayout(inject.getInsertInventory());
+        inject.getMonthSelect().setPanel(inject.getInsertInventory());
+        changeLayout(inject.getMonthSelect());
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
