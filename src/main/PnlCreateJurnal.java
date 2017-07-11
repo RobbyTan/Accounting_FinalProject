@@ -33,9 +33,12 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
 
+    private Calendar cal = Calendar.getInstance();
+
     Inject inject;
 
     FrmMain main;
+    boolean pass;
 
     public PnlCreateJurnal(Connection conn, Inject inject) {
         initComponents();
@@ -54,7 +57,6 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
             Date date = (Date) formatter.parse(dateStr);
 
-            Calendar cal = Calendar.getInstance();
             cal.setTime(date);
             String formatedDate = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DATE);
             return formatedDate;
@@ -63,6 +65,29 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         }
 //        return dtcCreateJurnal.getDate().toString();
         return null;
+    }
+
+    private boolean checkJurnal() {
+
+        try {
+            getDateChooserJurnal();
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where extract(month from date)=? && extract"
+                    + "(year from date)=? && jurnal_no=? ;");
+            // Execute SQL query
+            myStmt.setInt(1, cal.get(Calendar.MONTH) + 1);
+            myStmt.setInt(2, cal.get(Calendar.YEAR));
+            myStmt.setString(3, "J-" + txtCreateJurnalJurnalNo.getText());
+            System.out.println((cal.get(Calendar.MONTH) + 1) + " " + cal.get(Calendar.YEAR));
+            myRs = myStmt.executeQuery();
+            pass = true;
+            if (myRs.isBeforeFirst()) {
+                pass = false;
+            }
+            return pass;
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlCreateJurnal.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 
     public void generateTotal() {
@@ -113,7 +138,7 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
                 myStmt = myConn.prepareStatement("INSERT INTO `akuntansi`.`jurnal_detail` "
                         + "(`jurnal_no`, `chart_no`, `chart_name`, `debit`, `kredit`, `date`) VALUES"
                         + " (?,?,?,?,?,?);");
-                myStmt.setString(1, "J-"+txtCreateJurnalJurnalNo.getText());
+                myStmt.setString(1, "J-" + txtCreateJurnalJurnalNo.getText());
                 myStmt.setString(2, tblCreateJurnal.getValueAt(i, 0).toString());
                 myStmt.setString(3, tblCreateJurnal.getValueAt(i, 1).toString());
                 myStmt.setString(4, tblCreateJurnal.getValueAt(i, 2).toString());
@@ -303,27 +328,30 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
         if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty() && !dtcCreateJurnal.getDate().toString().trim().isEmpty()) {
             DlgCreateJurnalAddJurnalTransaction addTransaction = new DlgCreateJurnalAddJurnalTransaction(this, true, myConn);
             addTransaction.setVisible(true);
-            System.out.println(getDateChooserJurnal());
         } else {
-            System.out.println(dtcCreateJurnal.getDate());
             SUtility.msg(this, "Jurnal number and Date must not be empty");
         }
     }//GEN-LAST:event_btnCreateJurnalAddTransactionActionPerformed
 
     private void btnCreateJurnalSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateJurnalSaveActionPerformed
-        generateTotal();
-        if (txtCreateJurnalTotalDebit.getText().equals(txtCreateJurnalTotalKredit.getText())) {
-            if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty() && !getDateChooserJurnal().trim().isEmpty()) {
-                int x = SUtility.msq(this, "Are you sure?");
-                if (x == 0) {
-                    saveToDetail();
-                    saveToMaster();
+
+        if (checkJurnal()) {
+            generateTotal();
+            if (txtCreateJurnalTotalDebit.getText().equals(txtCreateJurnalTotalKredit.getText())) {
+                if (!txtCreateJurnalJurnalNo.getText().trim().isEmpty() && !getDateChooserJurnal().trim().isEmpty()) {
+                    int x = SUtility.msq(this, "Are you sure?");
+                    if (x == 0) {
+                        saveToDetail();
+                        saveToMaster();
+                    }
+                } else {
+                    SUtility.msg(this, "Fill All Data!");
                 }
             } else {
-                SUtility.msg(this, "Fill All Data!");
+                SUtility.msg(this, "unbalanced total kredit and debit");
             }
         } else {
-            SUtility.msg(this, "unbalanced total kredit and debit");
+            SUtility.msg(this, "Jurnal No already exist!");
         }
     }//GEN-LAST:event_btnCreateJurnalSaveActionPerformed
 
