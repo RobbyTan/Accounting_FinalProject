@@ -9,6 +9,11 @@ import injection.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -22,13 +27,239 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    
+    private double tAsset = 0;
+    private double tLiability = 0;
+    private double tCapital = 0;
+
     Inject inject;
-    
-    public PnlBalanceSheetReport(Connection conn,Inject inject) {
+
+    public PnlBalanceSheetReport(Connection conn, Inject inject) {
         initComponents();
-        myConn=conn;
-        this.inject=inject;
+        myConn = conn;
+        this.inject = inject;
+    }
+
+    public void generateTable() {
+        generateAssetTable();
+        generateCapitalTable();
+        generateLiabilityTable();
+        generateTotalLiabilityCapital();
+        txtPeriod.setText(inject.getMonth() + "-" + inject.getYear());
+    }
+
+    private void generateAssetTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetAsset.getModel();
+        for (int i = tblBalanceSheetAsset.getRowCount() - 1; i >= 0; i--) {
+            tableModel.removeRow(i);
+        }
+        try {
+            myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='asset' &&"
+                    + " extract(month from date)=? && extract(year from date)=? group by chart_name;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            ArrayList<String> chart_name = new ArrayList<>();
+
+            System.out.println(myRs.toString());
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    chart_name.add(myRs.getString("chart_name"));
+                }
+            }
+            for (String a : chart_name) {
+                generateAssetRow(a);
+            }
+            generateTotalAsset();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void generateAssetRow(String chart_name) {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetAsset.getModel();
+
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where chart_name=? &&"
+                    + " extract(month from date)=? && extract(year from date)=? ;");
+            // Execute SQL query
+            myStmt.setString(1, chart_name);
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            double debit = 0,
+                    kredit = 0,
+                    ending = 0;
+            String chartName = "";
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    debit += myRs.getDouble("debit");
+                    kredit += myRs.getDouble("kredit");
+                    chartName = myRs.getString("chart_name");
+                }
+                ending = debit - kredit;
+                Object data[] = {chartName, ending};
+                tableModel.addRow(data);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void generateLiabilityTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetLiability.getModel();
+        for (int i = tblBalanceSheetLiability.getRowCount() - 1; i >= 0; i--) {
+            tableModel.removeRow(i);
+        }
+        try {
+            myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='liability' &&"
+                    + " extract(month from date)=? && extract(year from date)=? group by chart_name;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            ArrayList<String> chart_name = new ArrayList<>();
+
+            System.out.println(myRs.toString());
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    chart_name.add(myRs.getString("chart_name"));
+                }
+            }
+            for (String a : chart_name) {
+                generateLiabilityRow(a);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void generateLiabilityRow(String chart_name) {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetLiability.getModel();
+
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where chart_name=? &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setString(1, chart_name);
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            double debit = 0,
+                    kredit = 0,
+                    ending = 0;
+            String chartName = "";
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    debit += myRs.getDouble("debit");
+                    kredit += myRs.getDouble("kredit");
+                    chartName = myRs.getString("chart_name");
+                }
+                ending = kredit-debit;
+                Object data[] = {chartName, ending};
+                tableModel.addRow(data);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private void generateCapitalTable() {
+        DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetCapital.getModel();
+        for (int i = tblBalanceSheetCapital.getRowCount() - 1; i >= 0; i--) {
+            tableModel.removeRow(i);
+        }
+        try {
+            myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='capital' &&"
+                    + " extract(month from date)=? && extract(year from date)=? group by chart_name;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            ArrayList<String> chart_name = new ArrayList<>();
+
+            System.out.println(myRs.toString());
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    chart_name.add(myRs.getString("chart_name"));
+                }
+            }
+            for (String a : chart_name) {
+                generateCapitalRow(a);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void generateCapitalRow(String chart_name) {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetCapital.getModel();
+
+            myStmt = myConn.prepareStatement("select * from jurnal_fulldata where chart_name=? &&"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setString(1, chart_name);
+            myStmt.setInt(2, inject.getMonth());
+            myStmt.setInt(3, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            double debit = 0,
+                    kredit = 0,
+                    ending = 0;
+            String chartName = "";
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    debit += myRs.getDouble("debit");
+                    kredit += myRs.getDouble("kredit");
+                    chartName = myRs.getString("chart_name");
+                }
+                ending = kredit-debit;
+                Object data[] = {chartName, ending};
+                tableModel.addRow(data);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void generateTotalAsset() {
+//        double tSales = 0;
+        for (int row = 0; row < tblBalanceSheetAsset.getRowCount(); row++) {
+            tAsset += Double.valueOf(tblBalanceSheetAsset.getValueAt(row, 1).toString());
+        }
+        txtBalanceSheetAsset.setText(String.valueOf(tAsset));
+    }
+
+    public void generateTotalLiabilityCapital() {
+//        double tSales = 0;
+        for (int row = 0; row < tblBalanceSheetLiability.getRowCount(); row++) {
+            tLiability += Double.valueOf(tblBalanceSheetLiability.getValueAt(row, 1).toString());
+        }
+        for (int row = 0; row < tblBalanceSheetCapital.getRowCount(); row++) {
+            tCapital += Double.valueOf(tblBalanceSheetCapital.getValueAt(row, 1).toString());
+        }
+
+        double totalLiabilityCapital=0;
+        totalLiabilityCapital=tLiability+tCapital;
+        txtBalanceSheetLiabilityCapital.setText(String.valueOf(totalLiabilityCapital));
     }
 
     /**
@@ -52,8 +283,9 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        txtBalanceSheetLiabilityCapital = new javax.swing.JTextField();
+        txtBalanceSheetAsset = new javax.swing.JTextField();
+        txtPeriod = new javax.swing.JTextField();
 
         jLabel1.setText("Period :");
 
@@ -68,7 +300,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Double.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false
@@ -99,7 +331,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Double.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false
@@ -128,7 +360,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Double.class, java.lang.Object.class
+                java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false
@@ -154,6 +386,13 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
 
         jLabel6.setText("Total Asset :");
 
+        txtPeriod.setEditable(false);
+        txtPeriod.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPeriodActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,7 +404,9 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
-                        .addGap(222, 222, 222)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(118, 118, 118)
                         .addComponent(jLabel3)
                         .addGap(237, 237, 237)
                         .addComponent(jLabel4))
@@ -175,7 +416,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jTextField2))
+                                .addComponent(txtBalanceSheetAsset))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -187,18 +428,19 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
                                 .addGap(223, 223, 223)
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtBalanceSheetLiabilityCapital, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(59, 59, 59)))))
                 .addContainerGap(134, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(txtPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -210,11 +452,15 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(17, Short.MAX_VALUE))
+                    .addComponent(txtBalanceSheetLiabilityCapital, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBalanceSheetAsset, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtPeriodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPeriodActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPeriodActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -227,10 +473,11 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JTable tblBalanceSheetAsset;
     private javax.swing.JTable tblBalanceSheetCapital;
     private javax.swing.JTable tblBalanceSheetLiability;
+    private javax.swing.JTextField txtBalanceSheetAsset;
+    private javax.swing.JTextField txtBalanceSheetLiabilityCapital;
+    private javax.swing.JTextField txtPeriod;
     // End of variables declaration//GEN-END:variables
 }

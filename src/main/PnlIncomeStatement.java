@@ -88,7 +88,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         }
         try {
             myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='sales' &&"
-                    + " extract(month from date)=? && extract(year from date)=?;");
+                    + " extract(month from date)=? && extract(year from date)=? group by chart_name;");
             // Execute SQL query
             myStmt.setInt(1, inject.getMonth());
             myStmt.setInt(2, inject.getYear());
@@ -118,7 +118,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         }
         try {
             myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='operational' &&"
-                    + " extract(month from date)=? && extract(year from date)=?;");
+                    + " extract(month from date)=? && extract(year from date)=? group by chart_name;");
             // Execute SQL query
             myStmt.setInt(1, inject.getMonth());
             myStmt.setInt(2, inject.getYear());
@@ -148,7 +148,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         }
         try {
             myStmt = myConn.prepareStatement("select chart_name from jurnal_fulldata where type='cost of good sold' &&"
-                    + " extract(month from date)=? && extract(year from date)=?;");
+                    + " extract(month from date)=? && extract(year from date)=? group by chart_name;");
             // Execute SQL query
             myStmt.setInt(1, inject.getMonth());
             myStmt.setInt(2, inject.getYear());
@@ -564,9 +564,9 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
