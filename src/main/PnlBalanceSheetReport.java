@@ -165,7 +165,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
                     kredit += myRs.getDouble("kredit");
                     chartName = myRs.getString("chart_name");
                 }
-                ending = kredit-debit;
+                ending = kredit - debit;
                 Object data[] = {chartName, ending};
                 tableModel.addRow(data);
             }
@@ -200,7 +200,8 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
             for (String a : chart_name) {
                 generateCapitalRow(a);
             }
-
+            System.out.println("aaa");
+            generateRetainedEarning();
         } catch (SQLException ex) {
             Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -229,11 +230,10 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
                     kredit += myRs.getDouble("kredit");
                     chartName = myRs.getString("chart_name");
                 }
-                ending = kredit-debit;
+                ending = kredit - debit;
                 Object data[] = {chartName, ending};
                 tableModel.addRow(data);
             }
-
         } catch (SQLException ex) {
             Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -257,9 +257,16 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
             tCapital += Double.valueOf(tblBalanceSheetCapital.getValueAt(row, 1).toString());
         }
 
-        double totalLiabilityCapital=0;
-        totalLiabilityCapital=tLiability+tCapital;
+        double totalLiabilityCapital = 0;
+        totalLiabilityCapital = tLiability + tCapital;
         txtBalanceSheetLiabilityCapital.setText(String.valueOf(totalLiabilityCapital));
+    }
+
+    private void generateRetainedEarning() {
+        DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetCapital.getModel();
+        Object data[] = {"Retained Earning", inject.getIncomeStatement().getNetProfit()};
+        System.out.println("here");
+        tableModel.addRow(data);
     }
 
     /**

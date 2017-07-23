@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -139,6 +140,10 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         } catch (SQLException ex) {
             Logger.getLogger(PnlIncomeStatement.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public double getNetProfit() {
+        return Double.valueOf(txtNetProfit.getText());
     }
 
     private void generateCOGSTable() {

@@ -54,6 +54,7 @@ public class PnlMonth extends javax.swing.JPanel {
             inject.getIncomeStatement().generateTable();
         }
         if(panel==inject.getBalanceSheet()){
+            inject.getIncomeStatement().generateTable();
             inject.getBalanceSheet().generateTable();
         }
     }
