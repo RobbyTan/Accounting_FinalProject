@@ -41,7 +41,9 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
     }
 
     public void generateTable() {
-
+        tSales=0;
+        tCOGS=0;
+        tOperational=0;
         generateSalesRevenueTable();
         generateOperationalTable();
         generateCOGSTable();
@@ -53,9 +55,9 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         double grossprofit = 0;
         double netprofit = 0;
         grossprofit = tSales-tCOGS;
-        txtGrossProfit.setText(String.valueOf(grossprofit));
+        txtGrossProfit.setText(String.valueOf((long)grossprofit));
         netprofit = grossprofit - tOperational;
-        txtNetProfit.setText(String.valueOf(netprofit));
+        txtNetProfit.setText(String.valueOf((long)netprofit));
     }
 
     public void generateTotalSales() {
@@ -63,7 +65,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         for (int row = 0; row < tblSalesRevenue.getRowCount(); row++) {
             tSales += Double.valueOf(tblSalesRevenue.getValueAt(row, 1).toString());
         }
-        txtTotalSalesRevenue.setText(String.valueOf(tSales));
+        txtTotalSalesRevenue.setText(String.valueOf((long)tSales));
     }
 
     public void generateTotalCOGS() {
@@ -71,7 +73,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         for (int row = 0; row < tblCOGS.getRowCount(); row++) {
             tCOGS += Double.valueOf(tblCOGS.getValueAt(row, 1).toString());
         }
-        txtTotalCOGS.setText(String.valueOf(tCOGS));
+        txtTotalCOGS.setText(String.valueOf((long)tCOGS));
     }
 
     public void generateTotalOperational() {
@@ -79,7 +81,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         for (int row = 0; row < tblOperational.getRowCount(); row++) {
             tOperational += Double.valueOf(tblOperational.getValueAt(row, 1).toString());
         }
-        txtTotalOperational.setText(String.valueOf(tOperational));
+        txtTotalOperational.setText(String.valueOf((long)tOperational));
     }
 
     private void generateSalesRevenueTable() {

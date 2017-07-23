@@ -172,8 +172,8 @@
               <Table columnCount="4" rowCount="0">
                 <Column editable="true" title="Chart No" type="java.lang.Object"/>
                 <Column editable="true" title="Chart Name" type="java.lang.Object"/>
-                <Column editable="true" title="Debit" type="java.lang.Object"/>
-                <Column editable="true" title="Kredit" type="java.lang.Object"/>
+                <Column editable="true" title="Debit" type="java.lang.Long"/>
+                <Column editable="true" title="Kredit" type="java.lang.Long"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

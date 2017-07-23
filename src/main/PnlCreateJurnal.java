@@ -97,8 +97,8 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             tDebit += Double.valueOf(tblCreateJurnal.getValueAt(row, 2).toString());
             tKredit += Double.valueOf(tblCreateJurnal.getValueAt(row, 3).toString());
         }
-        txtCreateJurnalTotalDebit.setText(String.valueOf(tDebit));
-        txtCreateJurnalTotalKredit.setText(String.valueOf(tKredit));
+        txtCreateJurnalTotalDebit.setText(String.valueOf((long)tDebit));
+        txtCreateJurnalTotalKredit.setText(String.valueOf((long)tKredit));
     }
 
     public void addTableRow(String no, String name, double debit, double kredit) {
@@ -210,7 +210,15 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             new String [] {
                 "Chart No", "Chart Name", "Debit", "Kredit"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Long.class, java.lang.Long.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(tblCreateJurnal);
         if (tblCreateJurnal.getColumnModel().getColumnCount() > 0) {
             tblCreateJurnal.getColumnModel().getColumn(0).setResizable(false);
