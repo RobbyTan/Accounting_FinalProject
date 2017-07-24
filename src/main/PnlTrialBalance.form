@@ -121,10 +121,10 @@
               <Table columnCount="6" rowCount="0">
                 <Column editable="false" title="Chart No" type="java.lang.String"/>
                 <Column editable="false" title="Chart Name" type="java.lang.String"/>
-                <Column editable="false" title="Opening" type="java.lang.String"/>
-                <Column editable="false" title="Debit" type="java.lang.String"/>
-                <Column editable="false" title="Kredit" type="java.lang.String"/>
-                <Column editable="false" title="Ending" type="java.lang.String"/>
+                <Column editable="false" title="Opening" type="java.lang.Double"/>
+                <Column editable="false" title="Debit" type="java.lang.Double"/>
+                <Column editable="false" title="Kredit" type="java.lang.Double"/>
+                <Column editable="false" title="Ending" type="java.lang.Double"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

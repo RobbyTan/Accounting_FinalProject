@@ -40,6 +40,9 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
     }
 
     public void generateTable() {
+        tAsset=0;
+        tLiability=0;
+        tCapital=0;
         generateAssetTable();
         generateCapitalTable();
         generateLiabilityTable();
