@@ -46,6 +46,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
         generateAssetTable();
         generateCapitalTable();
         generateLiabilityTable();
+        generateTotalAsset();
         generateTotalLiabilityCapital();
         txtPeriod.setText(inject.getMonth() + "-" + inject.getYear());
     }
@@ -74,8 +75,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
             for (String a : chart_name) {
                 generateAssetRow(a);
             }
-            generateTotalAsset();
-
+            generateEndingInventoryRow();
         } catch (SQLException ex) {
             Logger.getLogger(PnlBalanceSheetReport.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -272,6 +272,31 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
         tableModel.addRow(data);
     }
 
+       private void generateEndingInventoryRow() {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) tblBalanceSheetAsset.getModel();
+
+            myStmt = myConn.prepareStatement("select value from inventory where"
+                    + " extract(month from date)=? && extract(year from date)=?;");
+            // Execute SQL query
+            myStmt.setInt(1, inject.getMonth());
+            myStmt.setInt(2, inject.getYear());
+            myRs = myStmt.executeQuery();
+
+            double total = 0;
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    total += myRs.getDouble("value");
+                }
+                Object data[] = {"Ending inventory", (total)};
+                tableModel.addRow(data);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(PnlIncomeStatement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
