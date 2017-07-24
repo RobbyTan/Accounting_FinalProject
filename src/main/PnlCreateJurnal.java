@@ -351,6 +351,8 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
                     if (x == 0) {
                         saveToDetail();
                         saveToMaster();
+                        txtCreateJurnalTotalDebit.setText("");
+                        txtCreateJurnalTotalKredit.setText("");
                     }
                 } else {
                     SUtility.msg(this, "Fill All Data!");

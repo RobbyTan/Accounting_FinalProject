@@ -103,8 +103,8 @@ public class PnlViewJurnal extends javax.swing.JPanel {
             tDebit+=Double.valueOf(tblViewJurnal.getValueAt(row,3).toString());
             tKredit+=Double.valueOf(tblViewJurnal.getValueAt(row,4).toString());
         }
-        txtViewJurnalTotalDebit.setText(String.valueOf(tDebit));
-        txtViewJurnalTotalKredit.setText(String.valueOf(tKredit));
+        txtViewJurnalTotalDebit.setText(String.valueOf((long)tDebit));
+        txtViewJurnalTotalKredit.setText(String.valueOf((long)tKredit));
     }
     
     private void executeDeleteRow() {

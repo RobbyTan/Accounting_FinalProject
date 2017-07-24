@@ -154,10 +154,10 @@ public class PnlTrialBalance extends javax.swing.JPanel {
             tEnding+=Double.valueOf(tblTrialBalance.getValueAt(row,5).toString());
             tOpening+=Double.valueOf(tblTrialBalance.getValueAt(row,2).toString());
         }
-        txtTrialBalanceTotalDebit.setText(String.valueOf(tDebit));
-        txtTrialBalanceTotalKredit.setText(String.valueOf(tKredit));
-        txtTrialBalanceEnding.setText(String.valueOf(tEnding));
-        txtTrialBalanceOpening.setText(String.valueOf(tOpening));
+        txtTrialBalanceTotalDebit.setText(String.valueOf((long)tDebit));
+        txtTrialBalanceTotalKredit.setText(String.valueOf((long)tKredit));
+        txtTrialBalanceEnding.setText(String.valueOf((long)tEnding));
+        txtTrialBalanceOpening.setText(String.valueOf((long)tOpening));
     }
     
     /**

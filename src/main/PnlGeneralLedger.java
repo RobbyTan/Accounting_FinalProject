@@ -59,8 +59,8 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
             tDebit+=Double.valueOf(tblGeneralLedger.getValueAt(row,3).toString());
             tKredit+=Double.valueOf(tblGeneralLedger.getValueAt(row,4).toString());
         }
-        txtGeneralLedgerTotalDebit.setText(String.valueOf(tDebit));
-        txtGeneralLedgerTotalKredit.setText(String.valueOf(tKredit));
+        txtGeneralLedgerTotalDebit.setText(String.valueOf((long)tDebit));
+        txtGeneralLedgerTotalKredit.setText(String.valueOf((long)tKredit));
     }
     
     public void generateTable(String chartNo,int month,int year){
@@ -97,21 +97,6 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
         }
     }
 
-    public void toPDF() {
-        try {
-            DefaultTableModel table= (DefaultTableModel) tblGeneralLedger.getModel();
-            JRTableModelDataSource datasource= new JRTableModelDataSource(table);
-            String path="";
-            JasperPrint jasperPrint = null;
-            JasperReport jasperReport = JasperCompileManager.compileReport(path);
-            Map parameters = new HashMap();
-//            parameters.put("id_transaksi", id_transaksi);
-            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, myConn);
-            JasperViewer.viewReport(jasperPrint, false);
-        } catch (JRException ex) {
-            Logger.getLogger(PnlGeneralLedger.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -134,7 +119,6 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
         txtGeneralLedgerTotalDebit = new javax.swing.JTextField();
         txtGeneralLedgerTotalKredit = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        toPdf = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Chart No :");
@@ -205,8 +189,6 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
             }
         });
 
-        toPdf.setText("jButton2");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -241,9 +223,7 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
                     .addComponent(txtGeneralLedgerPeriod)
                     .addComponent(txtGeneralLedgerChartName)
                     .addComponent(txtGeneralLedgerChartNo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(toPdf)
-                .addGap(56, 56, 56))
+                .addGap(56, 391, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -261,16 +241,11 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtGeneralLedgerChartName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(txtGeneralLedgerPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(toPdf)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtGeneralLedgerPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -302,7 +277,6 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblGeneralLedger;
-    private javax.swing.JButton toPdf;
     private javax.swing.JTextField txtGeneralLedgerChartName;
     private javax.swing.JTextField txtGeneralLedgerChartNo;
     private javax.swing.JTextField txtGeneralLedgerPeriod;
