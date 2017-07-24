@@ -59,8 +59,8 @@ public class PnlGeneralLedger extends javax.swing.JPanel {
             tDebit+=Double.valueOf(tblGeneralLedger.getValueAt(row,3).toString());
             tKredit+=Double.valueOf(tblGeneralLedger.getValueAt(row,4).toString());
         }
-        txtGeneralLedgerTotalDebit.setText(String.valueOf((long)tDebit));
-        txtGeneralLedgerTotalKredit.setText(String.valueOf((long)tKredit));
+        txtGeneralLedgerTotalDebit.setText(String.format("%,.02f",tDebit));
+        txtGeneralLedgerTotalKredit.setText(String.format("%,.02f",tKredit));
     }
     
     public void generateTable(String chartNo,int month,int year){

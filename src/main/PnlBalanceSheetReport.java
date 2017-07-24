@@ -248,7 +248,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
         for (int row = 0; row < tblBalanceSheetAsset.getRowCount(); row++) {
             tAsset += Double.valueOf(tblBalanceSheetAsset.getValueAt(row, 1).toString());
         }
-        txtBalanceSheetAsset.setText(String.valueOf((long)tAsset));
+        txtBalanceSheetAsset.setText(String.format("%,.02f",tAsset));
     }
 
     public void generateTotalLiabilityCapital() {
@@ -262,7 +262,7 @@ public class PnlBalanceSheetReport extends javax.swing.JPanel {
 
         double totalLiabilityCapital = 0;
         totalLiabilityCapital = tLiability + tCapital;
-        txtBalanceSheetLiabilityCapital.setText(String.valueOf((long)totalLiabilityCapital));
+        txtBalanceSheetLiabilityCapital.setText(String.format("%,.02f",totalLiabilityCapital));
     }
 
     private void generateRetainedEarning() {

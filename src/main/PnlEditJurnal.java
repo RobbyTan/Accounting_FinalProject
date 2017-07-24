@@ -76,8 +76,8 @@ public class PnlEditJurnal extends javax.swing.JPanel {
             tDebit += Double.valueOf(tblEditJurnal.getValueAt(row, 2).toString());
             tKredit += Double.valueOf(tblEditJurnal.getValueAt(row, 3).toString());
         }
-        txtEditJurnalTotalDebit.setText(String.valueOf((long)tDebit));
-        txtEditJurnalTotalKredit.setText(String.valueOf((long)tKredit));
+        txtEditJurnalTotalDebit.setText(String.format("%,.02f",tDebit));
+        txtEditJurnalTotalKredit.setText(String.format("%,.02f",tKredit));
     }
 
     public void generateComboBoxJurnalNo() {
@@ -217,7 +217,7 @@ public class PnlEditJurnal extends javax.swing.JPanel {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Long.class, java.lang.Long.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Double.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, true, true

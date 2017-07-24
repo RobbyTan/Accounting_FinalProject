@@ -97,8 +97,9 @@ public class PnlCreateJurnal extends javax.swing.JPanel {
             tDebit += Double.valueOf(tblCreateJurnal.getValueAt(row, 2).toString());
             tKredit += Double.valueOf(tblCreateJurnal.getValueAt(row, 3).toString());
         }
-        txtCreateJurnalTotalDebit.setText(String.valueOf((long)tDebit));
-        txtCreateJurnalTotalKredit.setText(String.valueOf((long)tKredit));
+//        txtCreateJurnalTotalDebit.setText(String.valueOf((long)tDebit));
+        txtCreateJurnalTotalDebit.setText(String.format("%.02f", tDebit));
+        txtCreateJurnalTotalKredit.setText(String.format("%,.02f", tKredit));
     }
 
     public void addTableRow(String no, String name, double debit, double kredit) {

@@ -35,7 +35,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
     double tCOGS = 0;
     double grossprofit = 0;
     double netprofit = 0;
-
+   
     public PnlIncomeStatement(Connection conn, Inject inject) {
         initComponents();
         myConn = conn;
@@ -57,9 +57,9 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
 
     public void generateProfit() {
         grossprofit = tSales - tCOGS;
-        txtGrossProfit.setText(String.valueOf((long) grossprofit));
+        txtGrossProfit.setText(String.format("%,.02f",grossprofit));
         netprofit = grossprofit - tOperational;
-        txtNetProfit.setText(String.valueOf((long) netprofit));
+        txtNetProfit.setText(String.format("%,.02f", netprofit));
     }
 
     public void generateTotalSales() {
@@ -67,7 +67,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         for (int row = 0; row < tblSalesRevenue.getRowCount(); row++) {
             tSales += Double.valueOf(tblSalesRevenue.getValueAt(row, 1).toString());
         }
-        txtTotalSalesRevenue.setText(String.valueOf((long) tSales));
+        txtTotalSalesRevenue.setText(String.format("%,.02f", tSales));
     }
 
     public void generateTotalCOGS() {
@@ -75,7 +75,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         for (int row = 0; row < tblCOGS.getRowCount(); row++) {
             tCOGS += Double.valueOf(tblCOGS.getValueAt(row, 1).toString());
         }
-        txtTotalCOGS.setText(String.valueOf((long) tCOGS));
+        txtTotalCOGS.setText(String.format("%,.02f", tCOGS));
     }
 
     public void generateTotalOperational() {
@@ -83,7 +83,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         for (int row = 0; row < tblOperational.getRowCount(); row++) {
             tOperational += Double.valueOf(tblOperational.getValueAt(row, 1).toString());
         }
-        txtTotalOperational.setText(String.valueOf((long) tOperational));
+        txtTotalOperational.setText(String.format("%,.02f", tOperational));
     }
 
     private void generateSalesRevenueTable() {
@@ -147,7 +147,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
     }
 
     public double getNetProfit() {
-        return Double.valueOf(txtNetProfit.getText());
+        return netprofit;
     }
 
     private void generateCOGSTable() {
