@@ -51,7 +51,7 @@ public class PnlIncomeStatement extends javax.swing.JPanel {
         generateSalesRevenueTable();
         generateOperationalTable();
         generateCOGSTable();
-        txtPeriod.setText(inject.getMonth() + "-" + inject.getYear());
+        txtPeriod.setText(inject.getYear() + "-" +inject.getMonth());
         generateProfit();
     }
 

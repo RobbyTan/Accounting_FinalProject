@@ -26,16 +26,16 @@ public class PnlViewInventory extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    
+
     Inject inject;
-    
-    public PnlViewInventory(Connection conn,Inject inject) {
+
+    public PnlViewInventory(Connection conn, Inject inject) {
         initComponents();
-        myConn=conn;
-        this.inject=inject;
+        myConn = conn;
+        this.inject = inject;
     }
-    
-    public void generateTable(){
+
+    public void generateTable() {
         try {
             DefaultTableModel tableModel = (DefaultTableModel) tblViewInventory.getModel();
             for (int i = tblViewInventory.getRowCount() - 1; i >= 0; i--) {
@@ -52,14 +52,15 @@ public class PnlViewInventory extends javax.swing.JPanel {
             // Process result set
             while (myRs.next()) {
                 Object data[] = {myRs.getString("id"), myRs.getString("description"),
-                    myRs.getDouble("price"),myRs.getInt("opening"),myRs.getInt("in"),
-                    myRs.getInt("out"),myRs.getInt("ending"),myRs.getDouble("value")};
+                    myRs.getDouble("price"), myRs.getInt("opening"), myRs.getInt("in"),
+                    myRs.getInt("out"), myRs.getInt("ending"), myRs.getDouble("value")};
                 tableModel.addRow(data);
             }
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(PnlViewInventory.class.getName()).log(Level.SEVERE, null, ex);
         }
+        txtPeriod.setText(inject.getYear() + "-" + inject.getMonth());
     }
 
     /**
@@ -73,6 +74,8 @@ public class PnlViewInventory extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tblViewInventory = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        txtPeriod = new javax.swing.JTextField();
 
         tblViewInventory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -99,6 +102,15 @@ public class PnlViewInventory extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tblViewInventory);
 
+        jLabel1.setText("Period :");
+
+        txtPeriod.setEditable(false);
+        txtPeriod.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPeriodActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -107,19 +119,35 @@ public class PnlViewInventory extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 846, Short.MAX_VALUE)
                 .addGap(24, 24, 24))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(64, 64, 64)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(94, Short.MAX_VALUE)
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtPeriodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPeriodActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPeriodActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblViewInventory;
+    private javax.swing.JTextField txtPeriod;
     // End of variables declaration//GEN-END:variables
 }
