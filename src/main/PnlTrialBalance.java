@@ -27,7 +27,7 @@ public class PnlTrialBalance extends javax.swing.JPanel {
     private Connection myConn = null;
     private PreparedStatement myStmt = null;
     private ResultSet myRs = null;
-    double opening=0;
+    double opening = 0;
     Inject inject;
 
     public PnlTrialBalance(Connection conn, Inject inject) {
@@ -59,7 +59,7 @@ public class PnlTrialBalance extends javax.swing.JPanel {
                     kredit += myRs.getDouble("kredit");
                     chartName = myRs.getString("chart_name");
                 }
-                ending = debit - kredit;
+                ending = opening + debit - kredit;
                 Object data[] = {chartNo, chartName, opening, debit, kredit, ending};
                 tableModel.addRow(data);
                 System.out.println(opening);
@@ -72,16 +72,16 @@ public class PnlTrialBalance extends javax.swing.JPanel {
         }
     }
 
-     public void generateTableTemporaryLastMonth(String chartNo) {
+    public void generateTableTemporaryLastMonth(String chartNo) {
         try {
-            int month=0;
-            int year=0;
-            if(inject.getMonth()>1){
-            month=inject.getMonth()-1;
-            year=inject.getYear();
-            }else{
-            month=12;
-            year=inject.getYear()-1;
+            int month = 0;
+            int year = 0;
+            if (inject.getMonth() > 1) {
+                month = inject.getMonth() - 1;
+                year = inject.getYear();
+            } else {
+                month = 12;
+                year = inject.getYear() - 1;
             }
             DefaultTableModel tableModel = (DefaultTableModel) tblTrialBalance.getModel();
 
@@ -113,6 +113,7 @@ public class PnlTrialBalance extends javax.swing.JPanel {
 
         }
     }
+
     public void generateTable() {
         try {
             DefaultTableModel tableModel = (DefaultTableModel) tblTrialBalance.getModel();
@@ -132,6 +133,7 @@ public class PnlTrialBalance extends javax.swing.JPanel {
             }
             for (String c : chartNo) {
 //                generateTableTemporaryLastMonth(c);
+                 generateOpening(c);
                 generateTableTemporary(c);
             }
             generateTotal();
@@ -143,23 +145,52 @@ public class PnlTrialBalance extends javax.swing.JPanel {
         }
     }
 
-      private void generateTotal(){
-        double tDebit=0;
-        double tKredit=0;
-        double tEnding=0;
-        double tOpening=0;
-        for(int row=0;row<tblTrialBalance.getRowCount();row++){
-            tDebit+=Double.valueOf(tblTrialBalance.getValueAt(row,3).toString());
-            tKredit+=Double.valueOf(tblTrialBalance.getValueAt(row,4).toString());
-            tEnding+=Double.valueOf(tblTrialBalance.getValueAt(row,5).toString());
-            tOpening+=Double.valueOf(tblTrialBalance.getValueAt(row,2).toString());
+    private void generateTotal() {
+        double tDebit = 0;
+        double tKredit = 0;
+        double tEnding = 0;
+        double tOpening = 0;
+        for (int row = 0; row < tblTrialBalance.getRowCount(); row++) {
+            tDebit += Double.valueOf(tblTrialBalance.getValueAt(row, 3).toString());
+            tKredit += Double.valueOf(tblTrialBalance.getValueAt(row, 4).toString());
+            tEnding += Double.valueOf(tblTrialBalance.getValueAt(row, 5).toString());
+            tOpening += Double.valueOf(tblTrialBalance.getValueAt(row, 2).toString());
         }
-        txtTrialBalanceTotalDebit.setText(String.format("%,.02f",tDebit));
-        txtTrialBalanceTotalKredit.setText(String.format("%,.02f",tKredit));
-        txtTrialBalanceEnding.setText(String.format("%,.02f",tEnding));
-        txtTrialBalanceOpening.setText(String.format("%,.02f",tOpening));
+        txtTrialBalanceTotalDebit.setText(String.format("%,.02f", tDebit));
+        txtTrialBalanceTotalKredit.setText(String.format("%,.02f", tKredit));
+        txtTrialBalanceEnding.setText(String.format("%,.02f", tEnding));
+        txtTrialBalanceOpening.setText(String.format("%,.02f", tOpening));
     }
-    
+
+    private void generateOpening(String chart_no) {
+        try {
+            int month=0;
+            int year=0;
+            myStmt = myConn.prepareStatement("select * from tutup_buku where chart_no=? && date=?;");
+            myStmt.setString(1, chart_no);
+            if (inject.getMonth() == 1) {
+                month=12;
+                year=inject.getYear()-1;
+            }else{
+                month=inject.getMonth()-1;
+                year=inject.getYear();
+            }
+            myStmt.setString(2, year+ "-" + month + "-28");
+            // Execute SQL query
+            myRs = myStmt.executeQuery();
+            // Process result set
+            if (myRs.isBeforeFirst()) {
+                while (myRs.next()) {
+                    opening=myRs.getDouble("ending");
+                }
+            }else{
+                opening=0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DlgLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
